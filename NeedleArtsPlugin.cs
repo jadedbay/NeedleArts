@@ -13,6 +13,8 @@ namespace NeedleArts;
 public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony { get; } = new(Id);
     internal static ManualLogSource Log;
+
+    public static ToolData needleArtTool;
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
@@ -26,7 +28,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
         harmony.PatchAll();
 
-        NeedleforgePlugin.AddTool(
+        needleArtTool = NeedleforgePlugin.AddTool(
             $"{Id}_Hunter", NeedleArtsToolType.Type,
             new LocalisedString { Key = "HunterNeedleArtTool", Sheet = $"Mods.{Id}"},
             new LocalisedString { Key = "HunterNeedleArtToolDesc", Sheet = $"Mods.{Id}"}
