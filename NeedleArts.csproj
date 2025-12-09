@@ -32,17 +32,9 @@
     <PackageReference Include="HarmonyX" Version="2.9.0" />
     <PackageReference Include="Hamunii.BepInEx.AutoPlugin" Version="2.0.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.25.0" PrivateAssets="all" />
-    <PackageReference
-      Include="UnityEngine.Modules"
-      Version="6000.0.50"
-      IncludeAssets="compile"
-    />
-    <PackageReference
-      Include="Silksong.GameLibs"
-      Version="*-*"
-      PrivateAssets="all"
-
-    />
+    <PackageReference Include="Needleforge" Version="0.7.0" />
+    <PackageReference Include="UnityEngine.Modules" Version="6000.0.50" IncludeAssets="compile" />
+    <PackageReference Include="Silksong.GameLibs" Version="*-*" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,24 +53,13 @@
     </PropertyGroup>
 
     <!-- Local install -->
-    <Copy
-      SourceFiles="@(Binaries)"
-      DestinationFolder="$(SilksongPluginsFolder)/jadedbay-$(AssemblyTitle)/%(Binaries.LocalDir)"
-      Condition="'$(SilksongPluginsFolder)' != '' And Exists('$(SilksongPluginsFolder)')"
-    />
+    <Copy SourceFiles="@(Binaries)" DestinationFolder="$(SilksongPluginsFolder)/jadedbay-$(AssemblyTitle)/%(Binaries.LocalDir)" Condition="'$(SilksongPluginsFolder)' != '' And Exists('$(SilksongPluginsFolder)')" />
 
     <!-- Thunderstore packaging -->
     <RemoveDir Directories="$(ThunderstoreDir)/temp;$(ThunderstoreDir)/dist" />
     <MakeDir Directories="$(ThunderstoreDir)/temp" />
-    <Copy
-      SourceFiles="@(Binaries)"
-      DestinationFolder="$(ThunderstoreDir)/temp/%(Binaries.PackDir)"
-    />
+    <Copy SourceFiles="@(Binaries)" DestinationFolder="$(ThunderstoreDir)/temp/%(Binaries.PackDir)" />
     <Exec Command="dotnet tool restore" />
-    <Exec
-      Command="dotnet tcli build --config-path &quot;$(ThunderstoreDir)/thunderstore.toml&quot; --package-name &quot;$(AssemblyTitle)&quot; --package-version $(Version)"
-      StandardOutputImportance="High"
-      StandardErrorImportance="High"
-    />
+    <Exec Command="dotnet tcli build --config-path &quot;$(ThunderstoreDir)/thunderstore.toml&quot; --package-name &quot;$(AssemblyTitle)&quot; --package-version $(Version)" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
 </Project>
