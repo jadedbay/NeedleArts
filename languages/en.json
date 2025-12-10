@@ -1,4 +1,8 @@
 {
-  "HunterNeedleArtTool": "Hunter Strike",
-  "HunterNeedleArtToolDesc": "Technique of a skilled fighter. Strike twice in quick succession."
+  "Charge Slash Basic_Tool": "Hunter Strike",
+  "Charge Slash Basic_ToolDesc": "Technique of a skilled warrior. Strike twice in quick succession.",
+  "Charge Slash Scythe_Tool": "Reaper Cleave",
+  "Charge Slash Scythe_ToolDesc": "Technique of a tainted keeper. Leap up performing a powerful overhead attack.",
+  "Charge Slash Wanderer_Tool": "Wanderer Flurry",
+  "Charge Slash Wanderer_ToolDesc": "Technique of a lost soul. Thrust forward launching a flurry of attacks."
 }

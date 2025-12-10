@@ -27,4 +27,13 @@ internal class AddCrestSlot {
             crest.slots = slots.ToArray();
         }
     }
+
+    [HarmonyPatch(typeof(tk2dSpriteAnimation), nameof(tk2dSpriteAnimation.Start))]
+    [HarmonyPrefix]
+    private static void AnimationName(tk2dSpriteAnimation __instance) {
+        NeedleArtsPlugin.Log.LogInfo("ANIMATOR");
+        foreach (var clip in __instance.clips) {
+            NeedleArtsPlugin.Log.LogInfo(clip);
+        }
+    }
 }

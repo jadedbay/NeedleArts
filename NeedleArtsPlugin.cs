@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -14,12 +15,20 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony { get; } = new(Id);
     internal static ManualLogSource Log;
 
-    public static ToolData needleArtTool;
+    public static Dictionary<string, ToolData> needleArtTools = new();
+    public static Dictionary<string, ToolItem> needleArtToolItems = new();
+
+    public static Dictionary<string, GameObject> cachedChargeSlashes = new();
+
+    public static readonly string[] ChargeSlashNames = new[] {
+        "Charge Slash Basic",
+        "Charge Slash Scythe",
+        "Charge Slash Wanderer"
+    };
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
-        new Color(123.0f / 255.0f, 193.0f / 255.0f, 126.0f / 255.0f),
-        true
+        new Color(123.0f / 255.0f, 193.0f / 255.0f, 126.0f / 255.0f)
     ); 
     
     private void Awake() {
@@ -27,11 +36,22 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
         harmony.PatchAll();
+        
+        InitializeNeedleArtTools();
+    }
 
-        needleArtTool = NeedleforgePlugin.AddTool(
-            $"{Id}_Hunter", NeedleArtsToolType.Type,
-            new LocalisedString { Key = "HunterNeedleArtTool", Sheet = $"Mods.{Id}"},
-            new LocalisedString { Key = "HunterNeedleArtToolDesc", Sheet = $"Mods.{Id}"}
-        );
+    private static void InitializeNeedleArtTools() {
+        foreach (var slashName in ChargeSlashNames) {
+           AddNeedleArtTool(NeedleforgePlugin.AddTool(
+               slashName,
+               NeedleArtsToolType.Type,
+               new LocalisedString { Key = $"{slashName}_Tool", Sheet = $"Mods.{Id}" },
+               new LocalisedString { Key = $"{slashName}_ToolDesc", Sheet = $"Mods.{Id}" }
+           )); 
+        }
+    }
+
+    private static void AddNeedleArtTool(ToolData needleArt) {
+        needleArtTools.Add(needleArt.name, needleArt);
     }
 }
