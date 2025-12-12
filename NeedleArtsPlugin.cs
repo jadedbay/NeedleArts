@@ -15,10 +15,9 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony { get; } = new(Id);
     internal static ManualLogSource Log;
 
-    public static Dictionary<string, ToolData> needleArtTools = new();
+    public static Dictionary<string, NeedleArt> needleArts = new();
+    
     public static Dictionary<string, ToolItem> needleArtToolItems = new();
-
-    public static Dictionary<string, GameObject> cachedChargeSlashes = new();
 
     public static readonly string[] ChargeSlashNames = new[] {
         "Charge Slash Basic",
@@ -42,16 +41,21 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
 
     private static void InitializeNeedleArtTools() {
         foreach (var slashName in ChargeSlashNames) {
-           AddNeedleArtTool(NeedleforgePlugin.AddTool(
+           var tool = NeedleforgePlugin.AddTool(
                slashName,
                NeedleArtsToolType.Type,
                new LocalisedString { Key = $"{slashName}_Tool", Sheet = $"Mods.{Id}" },
                new LocalisedString { Key = $"{slashName}_ToolDesc", Sheet = $"Mods.{Id}" }
-           )); 
+           ); 
+           
+           needleArts.Add(slashName, new NeedleArt { Tool = tool });
         }
+        
+        
     }
-
-    private static void AddNeedleArtTool(ToolData needleArt) {
-        needleArtTools.Add(needleArt.name, needleArt);
+    
+    public class NeedleArt {
+        public ToolData Tool { get; set; }
+        public GameObject ChargeSlash { get; set; }
     }
 }

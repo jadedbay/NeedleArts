@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using System.Linq;
-using GlobalEnums;
 using HarmonyLib;
+using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using Silksong.FsmUtil;
 using UnityEngine;
-using UnityEngine.UIElements.Collections;
 
 namespace NeedleArts.Patches;
 
@@ -16,26 +15,25 @@ internal class PatchChargedSlash {
       var attacks = __instance.transform.Find("Attacks");
     
       foreach (var slashName in NeedleArtsPlugin.ChargeSlashNames) {
-         NeedleArtsPlugin.cachedChargeSlashes.Add(slashName, attacks?.Find(slashName)?.gameObject);
+         if (NeedleArtsPlugin.needleArts.TryGetValue(slashName, out var needleArt)) {
+            needleArt.ChargeSlash = attacks?.Find(slashName)?.gameObject;
+         }
       }
    }
    
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.CanNailCharge))]
    [HarmonyPrefix]
    private static bool IsNeedleArtEquipped() {
-      return NeedleArtsPlugin.needleArtTools.Any(tool => tool.Value.IsEquipped);
+      return NeedleArtsPlugin.needleArts.Values.Any(art => art.Tool.IsEquipped);
    }
-
-   [HarmonyPatch(typeof(GetHeroAttackObject), nameof(GetHeroAttackObject.GetGameObject))]
+   
+   [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
    [HarmonyPostfix]
-   private static void GetNeedleArt(ref GameObject __result) {
-      if (__result != HeroController.instance.CurrentConfigGroup.ChargeSlash) return;
-    
-      var equippedTool = NeedleArtsPlugin.needleArtTools.FirstOrDefault(tool => tool.Value.IsEquipped);
-    
-      if (equippedTool.Value != null && NeedleArtsPlugin.cachedChargeSlashes.TryGetValue(equippedTool.Key, out var slashObject)) {
-         __result = slashObject;
-      }
+   private static void SetChargedSlash(HeroController __instance) {
+      if (NeedleArtsPlugin.needleArts.IsNullOrEmpty()) return;
+      
+      __instance.CurrentConfigGroup.ChargeSlash =
+         NeedleArtsPlugin.needleArts.Values.FirstOrDefault(art => art.Tool.IsEquipped).ChargeSlash;
    }
 
    [HarmonyPatch(typeof(PlayMakerFSM), nameof(PlayMakerFSM.Start))]
