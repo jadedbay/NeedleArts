@@ -4,5 +4,9 @@
   "ReaperArt_Tool": "Reaper Cleave",
   "ReaperArt_ToolDesc": "Technique of a tainted keeper. Leap up performing a powerful overhead attack.",
   "WandererArt_Tool": "Wanderer Flurry",
-  "WandererArt_ToolDesc": "Technique of a lost soul. Thrust forward launching a flurry of attacks."
+  "WandererArt_ToolDesc": "Technique of a lost soul. Thrust forward launching a flurry of attacks.",
+  
+  "WitchArt_Tool": "Witch Whirlwind",
+  "ArchitectArt_Tool": "Architect Grind",
+  "ShamanArt_Tool": "Shaman Cast"
 }

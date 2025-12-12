@@ -23,7 +23,7 @@ internal class PatchChargedSlash {
    private static bool IsNeedleArtEquipped() {
       return NeedleArtsPlugin.NeedleArts.Values.Any(art => art.ToolItem.IsEquipped);
    }
-   
+  
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
    [HarmonyPostfix]
    private static void SetChargedSlash(HeroController __instance) {
@@ -44,12 +44,8 @@ internal class PatchChargedSlash {
 
       foreach (var needleArt in NeedleArtsPlugin.NeedleArts.Values) {
          anticType.AddAction(new CheckIfToolEquipped {
-            Tool = new FsmObject {
-               Value = needleArt.ToolItem
-            },
-            RequiredAmountLeft = 0,
+            Tool = new FsmObject { Value = needleArt.ToolItem },
             trueEvent = FsmEvent.GetFsmEvent(needleArt.EventName),
-            storeValue = false,
          });
       }
    }

@@ -19,6 +19,10 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         {"HunterArt", new NeedleArt("FINISHED", "Charge Slash Basic")},
         {"ReaperArt", new NeedleArt("REAPER", "Charge Slash Scythe")},
         {"WandererArt", new NeedleArt("WANDERER", "Charge Slash Wanderer")},
+        {"BeastArt", new NeedleArt("WARRIOR", "Charge Slash Warrior")}, // NOT WORKING, NOT TO DO WITH FSM
+        {"WitchArt", new NeedleArt("WITCH", "Charge Slash Witch")},
+        {"ArchitectArt", new NeedleArt("TOOLMASTER", "Charge Slash Toolmaster")},
+        {"ShamanArt", new NeedleArt("SHAMAN", "Charge Slash Shaman")},
     };
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
@@ -50,16 +54,11 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         NeedleArts.Add(name, needleArt);
     }
     
-    public class NeedleArt {
-        public readonly string EventName;
-        public readonly string ChargedSlashName;
+    public class NeedleArt(string eventName, string chargedSlashName) {
+        public readonly string EventName = eventName;
+        public readonly string ChargedSlashName = chargedSlashName;
         
         public ToolItem ToolItem;
         public GameObject ChargedSlash;
-
-        public NeedleArt(string eventName, string chargedSlashName) {
-            EventName = eventName;
-            ChargedSlashName = chargedSlashName;
-        }
     }
 }
