@@ -1,5 +1,4 @@
 using HarmonyLib;
-using Needleforge;
 using Needleforge.Makers;
 
 namespace NeedleArts.Patches;
@@ -9,6 +8,8 @@ internal class PatchToolMaker {
     [HarmonyPatch(typeof(ToolMaker), nameof(ToolMaker.AddCustomTool), typeof(ToolItem))]
     [HarmonyPostfix]
     private static void AddToolItem(ToolItem toolItem) {
-        NeedleArtsPlugin.needleArtToolItems.Add(toolItem.name, toolItem);
+         if (NeedleArtsPlugin.needleArts.TryGetValue(toolItem.name, out var needleArt)) {
+            needleArt.ToolItem = toolItem;
+         }
     }
 }

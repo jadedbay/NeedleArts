@@ -16,7 +16,7 @@ internal class PatchChargedSlash {
     
       foreach (var slashName in NeedleArtsPlugin.ChargeSlashNames) {
          if (NeedleArtsPlugin.needleArts.TryGetValue(slashName, out var needleArt)) {
-            needleArt.ChargeSlash = attacks?.Find(slashName)?.gameObject;
+            needleArt.ChargeSlash = attacks.Find(slashName).gameObject;
          }
       }
    }
@@ -24,16 +24,14 @@ internal class PatchChargedSlash {
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.CanNailCharge))]
    [HarmonyPrefix]
    private static bool IsNeedleArtEquipped() {
-      return NeedleArtsPlugin.needleArts.Values.Any(art => art.Tool.IsEquipped);
+      return NeedleArtsPlugin.needleArts.Values.Any(art => art.ToolItem.IsEquipped);
    }
    
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
    [HarmonyPostfix]
    private static void SetChargedSlash(HeroController __instance) {
-      if (NeedleArtsPlugin.needleArts.IsNullOrEmpty()) return;
-      
       __instance.CurrentConfigGroup.ChargeSlash =
-         NeedleArtsPlugin.needleArts.Values.FirstOrDefault(art => art.Tool.IsEquipped).ChargeSlash;
+         NeedleArtsPlugin.needleArts.Values.FirstOrDefault(art => art.ToolItem.IsEquipped)?.ChargeSlash;
    }
 
    [HarmonyPatch(typeof(PlayMakerFSM), nameof(PlayMakerFSM.Start))]
@@ -42,12 +40,17 @@ internal class PatchChargedSlash {
       if (__instance is not { name: "Hero_Hornet(Clone)", FsmName: "Nail Arts" })
          return;
    
-      /**
       FsmState anticType = __instance.Fsm.GetState("Antic Type");
       anticType.Actions = anticType.Actions
          .Where(action => action.GetType() != typeof(CheckIfCrestEquipped))
          .ToArray();
-         **/
       
+      /**
+      anticType.AddAction(new CheckIfToolEquipped {
+         Tool = new FsmObject {
+            Value =
+         }
+      });
+      **/
    }
 }
