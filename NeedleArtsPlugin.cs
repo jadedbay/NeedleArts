@@ -12,14 +12,14 @@ namespace NeedleArts;
 [BepInAutoPlugin(id: "io.github.jadedbay.needlearts")]
 [BepInDependency("org.silksong-modding.i18n")]
 public partial class NeedleArtsPlugin : BaseUnityPlugin {
-    private Harmony harmony { get; } = new(Id);
+    private Harmony harmony = new(Id);
     internal static ManualLogSource Log;
     
     public static Dictionary<string, NeedleArt> NeedleArts = new() {
         {"HunterArt", new NeedleArt("FINISHED", "Charge Slash Basic")},
         {"ReaperArt", new NeedleArt("REAPER", "Charge Slash Scythe")},
         {"WandererArt", new NeedleArt("WANDERER", "Charge Slash Wanderer")},
-        {"BeastArt", new NeedleArt("WARRIOR", "Charge Slash Warrior")}, // NOT WORKING, NOT TO DO WITH FSM
+        {"BeastArt", new NeedleArt("WARRIOR", "Charge Slash Warrior Old")},
         {"WitchArt", new NeedleArt("WITCH", "Charge Slash Witch")},
         {"ArchitectArt", new NeedleArt("TOOLMASTER", "Charge Slash Toolmaster")},
         {"ShamanArt", new NeedleArt("SHAMAN", "Charge Slash Shaman")},
@@ -50,8 +50,8 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         }
     }
 
-    public static void AddNeedleArt(string name, NeedleArt needleArt) {
-        NeedleArts.Add(name, needleArt);
+    public static void AddNeedleArt(string name, string eventName, string chargedSlashName) {
+        NeedleArts.Add(name, new NeedleArt(eventName, chargedSlashName));
     }
     
     public class NeedleArt(string eventName, string chargedSlashName) {

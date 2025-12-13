@@ -42,11 +42,14 @@ internal class PatchChargedSlash {
          .Where(action => action.GetType() != typeof(CheckIfCrestEquipped))
          .ToArray();
 
-      foreach (var needleArt in NeedleArtsPlugin.NeedleArts.Values) {
+      foreach (var needleArt in NeedleArtsPlugin.NeedleArts) {
          anticType.AddAction(new CheckIfToolEquipped {
-            Tool = new FsmObject { Value = needleArt.ToolItem },
-            trueEvent = FsmEvent.GetFsmEvent(needleArt.EventName),
+            Tool = new FsmObject { Value = needleArt.Value.ToolItem },
+            trueEvent = FsmEvent.GetFsmEvent(needleArt.Value.EventName),
+            storeValue = false,
          });
       }
+
+      anticType.ChangeTransition("WARRIOR", "Warrior Antic");
    }
 }
