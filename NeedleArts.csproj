@@ -27,6 +27,11 @@
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/jadedbay/NeedleArts</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\*.*" />
+  </ItemGroup> 
+  
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />

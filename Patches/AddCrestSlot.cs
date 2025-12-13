@@ -33,7 +33,6 @@ internal class AddCrestSlot {
             });
 
             crest.slots = slots.ToArray();
-            
         }
     }
 

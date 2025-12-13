@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -6,6 +8,7 @@ using Needleforge;
 using Needleforge.Data;
 using TeamCherry.Localization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace NeedleArts;
 
@@ -15,15 +18,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony = new(Id);
     internal static ManualLogSource Log;
     
-    public static Dictionary<string, NeedleArt> NeedleArts = new() {
-        {"HunterArt", new NeedleArt("FINISHED", "Charge Slash Basic")},
-        {"ReaperArt", new NeedleArt("REAPER", "Charge Slash Scythe")},
-        {"WandererArt", new NeedleArt("WANDERER", "Charge Slash Wanderer")},
-        {"BeastArt", new NeedleArt("WARRIOR", "Charge Slash Warrior Old")},
-        {"WitchArt", new NeedleArt("WITCH", "Charge Slash Witch")},
-        {"ArchitectArt", new NeedleArt("TOOLMASTER", "Charge Slash Toolmaster")},
-        {"ShamanArt", new NeedleArt("SHAMAN", "Charge Slash Shaman")},
-    };
+    public static Dictionary<string, NeedleArt> NeedleArts = new();
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
@@ -40,18 +35,33 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeNeedleArtTools() {
-        foreach (var needleArt in NeedleArts) {
-           NeedleforgePlugin.AddTool(
-               needleArt.Key,
-               NeedleArtsToolType.Type,
-               new LocalisedString { Key = $"{needleArt.Key}_Tool", Sheet = $"Mods.{Id}" },
-               new LocalisedString { Key = $"{needleArt.Key}_ToolDesc", Sheet = $"Mods.{Id}" }
-           ); 
-        }
+        AddNeedleArt("HunterArt", "FINISHED", "Charge Slash Basic", "HunterArtIcon");
+        AddNeedleArt("ReaperArt", "REAPER", "Charge Slash Scythe", "ReaperArtIcon");
+        AddNeedleArt("WandererArt", "WANDERER", "Charge Slash Wanderer", "WandererArtIcon");
+        AddNeedleArt("BeastArt", "WARRIOR", "Charge Slash Warrior Old", "BeastArtIcon");
+        AddNeedleArt("WitchArt", "WITCH", "Charge Slash Witch", "WitchArtIcon");
+        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Charge Slash Toolmaster", "ArchitectArtIcon");
+        AddNeedleArt("ShamanArt", "SHAMAN", "Charge Slash Shaman", "ShamanArtIcon");
     }
 
-    public static void AddNeedleArt(string name, string eventName, string chargedSlashName) {
-        NeedleArts.Add(name, new NeedleArt(eventName, chargedSlashName));
+    public static void AddNeedleArt(string name, string eventName, string chargedSlashName, string textureName) {
+        NeedleArts.Add(name, new NeedleArt(eventName, chargedSlashName)); 
+       
+        var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{textureName}.png");
+        var sprite = Sprite.Create(
+            texture, 
+            new Rect(0, 0, texture.width, texture.height), 
+            new Vector2(0.5f, 0.5f), 
+            260f
+        );
+        
+       NeedleforgePlugin.AddTool(
+           name,
+           NeedleArtsToolType.Type,
+           new LocalisedString { Key = $"{name}_Tool", Sheet = $"Mods.{Id}" },
+           new LocalisedString { Key = $"{name}_ToolDesc", Sheet = $"Mods.{Id}" },
+           sprite
+       ); 
     }
     
     public class NeedleArt(string eventName, string chargedSlashName) {
