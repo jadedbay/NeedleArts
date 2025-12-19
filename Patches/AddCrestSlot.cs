@@ -17,22 +17,22 @@ internal class AddCrestSlot {
             var minIndex = Array.FindIndex(crest.Slots, x => x.Position.y == minY);
             crest.Slots[minIndex].NavDownIndex = crest.Slots.Length;
 
-            var slots = crest.Slots.ToList();
-            slots.Add(new ToolCrest.SlotInfo {
-                IsLocked = false,
-                Position = new Vector2(0.0f, -4.43f),
-                NavUpFallbackIndex = -1,
-                NavDownFallbackIndex = -1,
-                NavLeftFallbackIndex = -1,
-                NavRightFallbackIndex = -1,
-                NavUpIndex = minIndex,
-                NavDownIndex = crest.Slots.Length,
-                NavLeftIndex = -1,
-                NavRightIndex = -1,
-                Type = NeedleArtsPlugin.NeedleArtsToolType.Type,
-            });
-
-            crest.slots = slots.ToArray();
+            crest.slots = [..crest.Slots,
+                new ToolCrest.SlotInfo {
+                    IsLocked = false,
+                    Position = new Vector2(0.0f, -4.43f),
+                    NavUpFallbackIndex = -1,
+                    NavDownFallbackIndex = -1,
+                    NavLeftFallbackIndex = -1,
+                    NavRightFallbackIndex = -1,
+                    NavUpIndex = minIndex,
+                    NavDownIndex = crest.Slots.Length,
+                    NavLeftIndex = -1,
+                    NavRightIndex = -1,
+                    Type = NeedleArtsPlugin.NeedleArtsToolType.Type,
+                }
+            ];
+            
         }
     }
 

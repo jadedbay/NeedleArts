@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -21,5 +22,19 @@ public static class Util {
         Texture2D tex = new Texture2D(2, 2);
         tex.LoadImage(data);
         return tex;
+    }
+
+    public static tk2dSpriteAnimationClip CopyClip(tk2dSpriteAnimationClip clip, string newName) {
+        return new tk2dSpriteAnimationClip {
+            name = newName,
+            frames = clip.frames,
+            fps = clip.fps,
+            loopStart = clip.loopStart,
+            wrapMode = clip.wrapMode
+        };
+    }
+
+    public static HeroController.ConfigGroup GetConfigGroup(this HeroController hc, string name) {
+        return hc.configs.FirstOrDefault(config => config.ActiveRoot.name == name);
     }
 }

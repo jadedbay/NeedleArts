@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -8,7 +6,6 @@ using Needleforge;
 using Needleforge.Data;
 using TeamCherry.Localization;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace NeedleArts;
 
@@ -35,17 +32,17 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt("HunterArt", "FINISHED", "Charge Slash Basic", "HunterArtIcon");
-        AddNeedleArt("ReaperArt", "REAPER", "Charge Slash Scythe", "ReaperArtIcon");
-        AddNeedleArt("WandererArt", "WANDERER", "Charge Slash Wanderer", "WandererArtIcon");
-        AddNeedleArt("BeastArt", "WARRIOR", "Charge Slash Warrior Old", "BeastArtIcon");
-        AddNeedleArt("WitchArt", "WITCH", "Charge Slash Witch", "WitchArtIcon");
-        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Charge Slash Toolmaster", "ArchitectArtIcon");
-        AddNeedleArt("ShamanArt", "SHAMAN", "Charge Slash Shaman", "ShamanArtIcon");
+        AddNeedleArt("HunterArt", "FINISHED", "Charge Slash Basic", "Hunter", "HunterArtIcon", 0, "Antic", 2, 0);
+        AddNeedleArt("ReaperArt", "REAPER", "Charge Slash Scythe", "Reaper", "ReaperArtIcon", 10, "Antic Rpr", 3, 2);
+        AddNeedleArt("WandererArt", "WANDERER", "Charge Slash Wanderer", "Wanderer", "WandererArtIcon", 0, "Wanderer Antic", 0, 4);
+        AddNeedleArt("BeastArt", "WARRIOR", "Charge Slash Warrior Old", "Warrior", "BeastArtIcon", 7, "Warrior Antic", 0, 3);
+        AddNeedleArt("WitchArt", "WITCH", "Charge Slash Witch", "Witch", "WitchArtIcon", 10, "Antic", 2, 6);
+        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Charge Slash Toolmaster", "Toolmaster", "ArchitectArtIcon", 14, "Antic Drill", 2, 5);
+        AddNeedleArt("ShamanArt", "SHAMAN", "Charge Slash Shaman", "Spell", "ShamanArtIcon", 2, "Antic", 2, 7);
     }
 
-    public static void AddNeedleArt(string name, string eventName, string chargedSlashName, string textureName) {
-        NeedleArts.Add(name, new NeedleArt(eventName, chargedSlashName)); 
+    public static void AddNeedleArt(string name, string eventName, string chargedSlashName, string crestName, string textureName, int clipId, string anticName, int actionId, int configId) {
+        NeedleArts.Add(name, new NeedleArt(eventName, chargedSlashName, crestName, clipId, anticName, actionId, configId)); 
        
         var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{textureName}.png");
         var sprite = Sprite.Create(
@@ -55,18 +52,23 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             260f
         );
         
-       NeedleforgePlugin.AddTool(
-           name,
-           NeedleArtsToolType.Type,
-           new LocalisedString { Key = $"{name}_Tool", Sheet = $"Mods.{Id}" },
-           new LocalisedString { Key = $"{name}_ToolDesc", Sheet = $"Mods.{Id}" },
-           sprite
-       ); 
+        NeedleforgePlugin.AddTool(
+            name,
+            NeedleArtsToolType.Type,
+            new LocalisedString { Key = $"{name}_Tool", Sheet = $"Mods.{Id}" },
+            new LocalisedString { Key = $"{name}_ToolDesc", Sheet = $"Mods.{Id}" },
+            sprite
+        ); 
     }
     
-    public class NeedleArt(string eventName, string chargedSlashName) {
+    public class NeedleArt(string eventName, string chargedSlashName, string crestName, int clipId, string anticName, int actionId, int configId) {
         public readonly string EventName = eventName;
         public readonly string ChargedSlashName = chargedSlashName;
+        public readonly string CrestName = crestName;
+        public readonly int ClipId = clipId;
+        public readonly string AnticName = anticName;
+        public readonly int ActionId = actionId;
+        public readonly int ConfigId = configId;
         
         public ToolItem ToolItem;
         public GameObject ChargedSlash;

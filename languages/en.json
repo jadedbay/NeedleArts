@@ -1,12 +1,16 @@
 {
   "HunterArt_Tool": "Hunter Strike",
-  "HunterArt_ToolDesc": "Technique of a skilled warrior. Strike twice in quick succession.",
+  "HunterArt_ToolDesc": "Strike twice in quick succession.",
   "ReaperArt_Tool": "Reaper Cleave",
-  "ReaperArt_ToolDesc": "Technique of a tainted keeper. Leap up performing a powerful overhead attack.",
+  "ReaperArt_ToolDesc": "Leap up performing a powerful overhead attack.",
   "WandererArt_Tool": "Wanderer Flurry",
-  "WandererArt_ToolDesc": "Technique of a lost soul. Thrust forward launching a flurry of attacks.",
-  
+  "WandererArt_ToolDesc": "Thrust forward and launch a flurry of attacks.",
+  "BeastArt_Tool": "Beast Barrage",
+  "BeastArt_ToolDesc": "Lunge forward and rapidly strike forward.",
   "WitchArt_Tool": "Witch Whirlwind",
+  "WitchArt_ToolDesc": "Send whips out while spinning around.",
   "ArchitectArt_Tool": "Architect Grind",
-  "ShamanArt_Tool": "Shaman Cast"
+  "ArchitectArt_ToolDesc": "Attack with a large drill-like strike.",
+  "ShamanArt_Tool": "Shaman Cast",
+  "ShamanArt_ToolDesc": "Fire a spell wave forward."
 }
