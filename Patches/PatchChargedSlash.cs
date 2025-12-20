@@ -10,7 +10,7 @@ namespace NeedleArts.Patches;
 [HarmonyPatch]
 internal class PatchChargedSlash {
    private static GameObject _prevChargeSlash;
-   private static HeroControllerConfig _prevConfig; 
+   private static HeroControllerConfig _prevConfig;
    
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.Awake))]
    [HarmonyPostfix]
@@ -18,35 +18,30 @@ internal class PatchChargedSlash {
       List<tk2dSpriteAnimationClip> artClips = [];
 
       var animator = __instance.GetComponent<tk2dSpriteAnimator>();
-      artClips.Add(Util.CopyClip(animator.Library.GetClipByName("Slash_Charged"), "HunterArt"));
-
-      var crestList = ToolItemManager.Instance.crestList;
-      foreach (var needleArt in NeedleArtsPlugin.NeedleArts) {
-         if (needleArt.Key == "HunterArt") continue;
+      artClips.Add(Util.CopyClip(animator.Library.GetClipByName("Slash_Charged"), "Hunter_Anim"));
+      
+      foreach (var config in __instance.configs) {
+         if (config.Config.heroAnimOverrideLib == null) continue;
          
-         artClips.Add(
-            Util.CopyClip(
-               crestList.GetByName(needleArt.Value.CrestName).HeroConfig.heroAnimOverrideLib.clips[needleArt.Value.ClipId], // Get clip by index cause using GetClipByName breaks the animation.
-               needleArt.Key)
-         );
+         var clip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "Slash_Charged");
+         if (clip == null) continue;
+         
+         artClips.Add(Util.CopyClip(clip, $"{config.Config.name}_Anim"));
       }
 
       animator.Library.clips = [
          ..animator.Library.clips,
          ..artClips,
       ];
+      
+      foreach (var config in __instance.configs) {
+         if (config.Config.heroAnimOverrideLib == null) continue;
 
-      foreach (var crest in ToolItemManager.Instance.crestList) {
-         if (crest.HeroConfig is not { } config
-             || config.name is "Cloakless")
-            continue;
-         
-         config.heroAnimOverrideLib.clips = [
-            ..config.heroAnimOverrideLib.clips,
+         config.Config.heroAnimOverrideLib.clips = [
+            ..config.Config.heroAnimOverrideLib.clips,
             ..artClips,
          ];
       }
-      
    }
    
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.CanNailCharge))]
@@ -84,7 +79,7 @@ internal class PatchChargedSlash {
       // TODO: Set clipName in startup and just change here if shaman/hunter
       var fsm = PlayMakerFSM.FindFsmOnGameObject(__instance.gameObject, "Nail Arts");
       fsm.GetState(artEquipped.Value.AnticName).GetAction<Tk2dPlayAnimationWithEvents>(artEquipped.Value.ActionId)
-         .clipName = artEquipped.Key;
+         .clipName = artEquipped.Value.AnimName;
    }
    
    [HarmonyPatch(typeof(PlayMakerFSM), nameof(PlayMakerFSM.Start))]

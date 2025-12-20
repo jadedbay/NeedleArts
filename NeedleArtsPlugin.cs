@@ -21,8 +21,6 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         "NeedleArts",
         new Color(123.0f / 255.0f, 183.0f / 255.0f, 126.0f / 255.0f)
     );
-
-    //public static HeroController.ConfigGroup ModifiedConfigGroup;
     
     private void Awake() {
         Log = Logger;
@@ -34,19 +32,19 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt("HunterArt", "FINISHED", "Hunter", "HunterArtIcon", 0, "Antic", 2, 0);
-        AddNeedleArt("ReaperArt", "REAPER", "Reaper", "ReaperArtIcon", 10, "Antic Rpr", 3, 2);
-        AddNeedleArt("WandererArt", "WANDERER", "Wanderer", "WandererArtIcon", 0, "Wanderer Antic", 0, 4);
-        AddNeedleArt("BeastArt", "WARRIOR", "Warrior", "BeastArtIcon", 7, "Warrior Antic", 0, 3);
-        AddNeedleArt("WitchArt", "WITCH", "Witch", "WitchArtIcon", 10, "Antic", 2, 6);
-        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Toolmaster", "ArchitectArtIcon", 14, "Antic Drill", 2, 5);
-        AddNeedleArt("ShamanArt", "SHAMAN", "Spell", "ShamanArtIcon", 2, "Antic", 2, 7);
+        AddNeedleArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 2, 0);
+        AddNeedleArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 3, 2);
+        AddNeedleArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 0, 4);
+        AddNeedleArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 0, 3);
+        AddNeedleArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 2, 6);
+        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 2, 5);
+        AddNeedleArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 2, 7);
     }
 
-    public static void AddNeedleArt(string name, string eventName, string crestName, string textureName, int clipId, string anticName, int actionId, int configId) {
-        NeedleArts.Add(name, new NeedleArt(eventName, crestName, clipId, anticName, actionId, configId)); 
+    public static void AddNeedleArt(string name, string eventName, string anticName, string animName, int actionId, int configId) {
+        NeedleArts.Add(name, new NeedleArt(eventName, anticName, animName, actionId, configId)); 
        
-        var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{textureName}.png");
+        var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{name}Icon.png");
         var sprite = Sprite.Create(
             texture, 
             new Rect(0, 0, texture.width, texture.height), 
@@ -63,11 +61,10 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         ); 
     }
     
-    public class NeedleArt(string eventName, string crestName, int clipId, string anticName, int actionId, int configId) {
+    public class NeedleArt(string eventName, string anticName, string animName, int actionId, int configId) {
         public readonly string EventName = eventName;
-        public readonly string CrestName = crestName;
-        public readonly int ClipId = clipId;
         public readonly string AnticName = anticName;
+        public readonly string AnimName = animName;
         public readonly int ActionId = actionId;
         public readonly int ConfigId = configId;
         
