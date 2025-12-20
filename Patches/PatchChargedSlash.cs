@@ -18,7 +18,7 @@ internal class PatchChargedSlash {
       List<tk2dSpriteAnimationClip> artClips = [];
 
       var animator = __instance.GetComponent<tk2dSpriteAnimator>();
-      artClips.Add(Util.CopyClip(animator.Library.GetClipByName("Slash_Charged"), "Hunter_Anim"));
+      artClips.Add(Util.CopyClip(animator.Library.clips.FirstOrDefault(c => c.name == "Slash_Charged"), "Hunter_Anim"));
       
       foreach (var config in __instance.configs) {
          if (config.Config.heroAnimOverrideLib == null) continue;
