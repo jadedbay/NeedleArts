@@ -64,7 +64,7 @@ internal class PatchChargedSlash {
       _prevConfig = Object.Instantiate(__instance.Config);
       
       var artEquipped = NeedleArtsPlugin.NeedleArts.FirstOrDefault(art => art.Value.ToolItem.IsEquipped);
-      if (artEquipped.Value == null) return;
+      if (artEquipped.Key == null) return;
       
       var artConfig = __instance.configs[artEquipped.Value.ConfigId];
       __instance.CurrentConfigGroup.ChargeSlash = artConfig.ChargeSlash;
@@ -75,11 +75,11 @@ internal class PatchChargedSlash {
       hcConfig.chargeSlashLungeSpeed = artConfig.Config.ChargeSlashLungeSpeed;
       hcConfig.chargeSlashLungeDeceleration = artConfig.Config.ChargeSlashLungeDeceleration;
       
-      // Set clipName here since Hunter/Shaman share same antic state
-      // TODO: Set clipName in startup and just change here if shaman/hunter
-      var fsm = PlayMakerFSM.FindFsmOnGameObject(__instance.gameObject, "Nail Arts");
-      fsm.GetState(artEquipped.Value.AnticName).GetAction<Tk2dPlayAnimationWithEvents>(artEquipped.Value.ActionId)
-         .clipName = artEquipped.Value.AnimName;
+      if (artEquipped.Key is "HunterArt" or "WitchArt" or "ShamanArt") {
+         var fsm = PlayMakerFSM.FindFsmOnGameObject(__instance.gameObject, "Nail Arts");
+         fsm.GetState(artEquipped.Value.AnticName).GetAction<Tk2dPlayAnimationWithEvents>(artEquipped.Value.ActionId)
+            .clipName = artEquipped.Value.AnimName;
+      } 
    }
    
    [HarmonyPatch(typeof(PlayMakerFSM), nameof(PlayMakerFSM.Start))]
@@ -93,12 +93,15 @@ internal class PatchChargedSlash {
          .Where(action => action.GetType() != typeof(CheckIfCrestEquipped))
          .ToArray();
 
-      foreach (var needleArt in NeedleArtsPlugin.NeedleArts) {
+      foreach (var needleArt in NeedleArtsPlugin.NeedleArts.Values) {
          anticType.AddAction(new CheckIfToolEquipped {
-            Tool = new FsmObject { Value = needleArt.Value.ToolItem },
-            trueEvent = FsmEvent.GetFsmEvent(needleArt.Value.EventName),
+            Tool = new FsmObject { Value = needleArt.ToolItem },
+            trueEvent = FsmEvent.GetFsmEvent(needleArt.EventName),
             storeValue = false,
          });
+
+         __instance.GetState(needleArt.AnticName).GetAction<Tk2dPlayAnimationWithEvents>(needleArt.ActionId)
+            .clipName = needleArt.AnimName;
       }
       
       anticType.ChangeTransition("WARRIOR", "Warrior Antic");
