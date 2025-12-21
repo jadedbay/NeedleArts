@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -15,7 +16,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony = new(Id);
     internal static ManualLogSource Log;
     
-    public static Dictionary<string, NeedleArt> NeedleArts = new();
+    public static List<NeedleArt> NeedleArts = [];
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
@@ -42,7 +43,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     public static void AddNeedleArt(string name, string eventName, string anticName, string animName, int configId) {
-        NeedleArts.Add(name, new NeedleArt(eventName, anticName, animName, configId)); 
+        NeedleArts.Add(new NeedleArt(name, eventName, anticName, animName, configId)); 
        
         var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{name}Icon.png");
         var sprite = Sprite.Create(
@@ -60,8 +61,14 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             sprite
         ); 
     }
+
+    public static NeedleArt? GetNeedleArtByName(string name) {
+        return NeedleArts.FirstOrDefault(art => art.Name == name);
+    }
     
-    public class NeedleArt(string eventName, string anticName, string animName, int configId) {
+    public class NeedleArt(string name, string eventName, string anticName, string animName, int configId) {
+        public readonly string Name = name; 
+        
         public readonly string EventName = eventName;
         public readonly string AnticName = anticName;
         public readonly string AnimName = animName;
