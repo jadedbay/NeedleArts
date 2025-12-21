@@ -8,7 +8,8 @@ internal class PatchToolMaker {
     [HarmonyPatch(typeof(ToolMaker), nameof(ToolMaker.AddCustomTool), typeof(ToolItem))]
     [HarmonyPostfix]
     private static void AddToolItem(ToolItem toolItem) {
-        var needleArt = NeedleArtsPlugin.GetNeedleArtByName(toolItem.name);
-        if (needleArt != null) needleArt.ToolItem = toolItem;
+        if (NeedleArtsPlugin.GetNeedleArtByName(toolItem.name) is { } needleArt) {
+            needleArt.ToolItem = toolItem;
+        }
     }
 }

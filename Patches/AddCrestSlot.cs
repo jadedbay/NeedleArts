@@ -7,12 +7,15 @@ namespace NeedleArts.Patches;
 
 [HarmonyPatch]
 internal class AddCrestSlot {
+    private static bool _hasAddedSlots; 
+    
     [HarmonyPatch(typeof(ToolItemManager), nameof(ToolItemManager.Awake))]
     [HarmonyPostfix]
     private static void AddNeedleArtSlot(ToolItemManager __instance) {
+        if (_hasAddedSlots) return; 
+        
         foreach (var crest in __instance.crestList) {
             if (crest.Slots.IsNullOrEmpty()) continue;
-            if (crest.Slots.Any(s => s.Type == NeedleArtsPlugin.NeedleArtsToolType.Type)) continue;
 
             var minY = crest.Slots.Min(s => s.Position.y);
             var minIndex = Array.FindIndex(crest.Slots, x => x.Position.y == minY);
@@ -33,8 +36,9 @@ internal class AddCrestSlot {
                     Type = NeedleArtsPlugin.NeedleArtsToolType.Type,
                 }
             ];
-            
         }
+
+        _hasAddedSlots = true;
     }
 
     [HarmonyPatch(typeof(InventoryItemSelectableDirectional), nameof(InventoryItemSelectableDirectional.GetNextSelectable), typeof(InventoryItemManager.SelectionDirection))]

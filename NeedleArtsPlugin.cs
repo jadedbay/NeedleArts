@@ -3,6 +3,7 @@ using System.Linq;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using NeedleArts.ArtTools;
 using Needleforge;
 using Needleforge.Data;
 using TeamCherry.Localization;
@@ -33,19 +34,19 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0);
-        AddNeedleArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2);
-        AddNeedleArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4);
-        AddNeedleArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3);
-        AddNeedleArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6);
-        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5);
-        AddNeedleArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7);
+        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0));
+        AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2));
+        AddNeedleArt(new CrestArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4));
+        AddNeedleArt(new CrestArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3));
+        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6));
+        AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5));
+        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7));
     }
 
-    public static void AddNeedleArt(string name, string eventName, string anticName, string animName, int configId) {
-        NeedleArts.Add(new NeedleArt(name, eventName, anticName, animName, configId)); 
-       
-        var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{name}Icon.png");
+    public static void AddNeedleArt(NeedleArt needleArt) {
+        NeedleArts.Add(needleArt); 
+        
+        var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{needleArt.Name}Icon.png");
         var sprite = Sprite.Create(
             texture, 
             new Rect(0, 0, texture.width, texture.height), 
@@ -54,10 +55,10 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         );
         
         NeedleforgePlugin.AddTool(
-            name,
+            needleArt.Name,
             NeedleArtsToolType.Type,
-            new LocalisedString { Key = $"{name}_Tool", Sheet = $"Mods.{Id}" },
-            new LocalisedString { Key = $"{name}_ToolDesc", Sheet = $"Mods.{Id}" },
+            new LocalisedString { Key = $"{needleArt.Name}_Tool", Sheet = $"Mods.{Id}" },
+            new LocalisedString { Key = $"{needleArt.Name}_ToolDesc", Sheet = $"Mods.{Id}" },
             sprite
         ); 
     }
@@ -65,15 +66,8 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     public static NeedleArt? GetNeedleArtByName(string name) {
         return NeedleArts.FirstOrDefault(art => art.Name == name);
     }
-    
-    public class NeedleArt(string name, string eventName, string anticName, string animName, int configId) {
-        public readonly string Name = name; 
-        
-        public readonly string EventName = eventName;
-        public readonly string AnticName = anticName;
-        public readonly string AnimName = animName;
-        public readonly int ConfigId = configId;
-        
-        public ToolItem ToolItem;
+
+    public static NeedleArt? GetEquippedNeedleArt() {
+        return NeedleArts.FirstOrDefault(art => art.ToolItem.IsEquipped);
     }
 }
