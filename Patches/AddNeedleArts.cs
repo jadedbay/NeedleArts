@@ -28,6 +28,12 @@ internal class AddNeedleArts {
          if (clip == null) continue;
          
          artClips.Add(Util.CopyClip(clip, $"{config.Config.name}_Anim"));
+    
+         
+         var beastClip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "NeedleArt Dash");
+         if (beastClip == null) continue;
+         artClips.Add(Util.CopyClip(beastClip, "NeedleArt Dash"));
+
       }
 
       animator.Library.clips = [
@@ -72,7 +78,7 @@ internal class AddNeedleArts {
     
       var artConfig = __instance.configs[artEquipped.Value.ConfigId];
       __instance.CurrentConfigGroup.ChargeSlash = artConfig.ChargeSlash;
-   
+      
       var hcConfig = __instance.Config;
       hcConfig.chargeSlashRecoils = artConfig.Config.ChargeSlashRecoils;
       hcConfig.chargeSlashChain = artConfig.Config.ChargeSlashChain;
@@ -108,7 +114,7 @@ internal class AddNeedleArts {
             .clipName = needleArt.AnimName;
       }
       
-      anticType.ChangeTransition("WARRIOR", "Warrior Antic");
+      //anticType.ChangeTransition("WARRIOR", "Warrior Antic");
    }
 
    [HarmonyPatch(typeof(GameManager), nameof(GameManager.ReturnToMainMenu))]
