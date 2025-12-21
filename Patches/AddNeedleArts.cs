@@ -8,10 +8,11 @@ using UnityEngine;
 
 namespace NeedleArts.Patches;
 [HarmonyPatch]
-internal class PatchChargedSlash {
+internal class AddNeedleArts {
    private static GameObject _prevChargeSlash;
    private static HeroControllerConfig _prevConfig;
-   
+  
+   // Add all needle art animations to all config groups
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.Awake))]
    [HarmonyPostfix]
    private static void CopyAnims(HeroController __instance) {
@@ -43,44 +44,47 @@ internal class PatchChargedSlash {
          ];
       }
    }
-   
+ 
+   // Disable charged slash if no needle art equipped
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.CanNailCharge))]
    [HarmonyPrefix]
    private static bool IsNeedleArtEquipped() {
       return NeedleArtsPlugin.NeedleArts.Values.Any(art => art.ToolItem.IsEquipped);
    }
 
+   // Set config values back
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
    [HarmonyPrefix]
    private static void SetConfigPre(HeroController __instance) {
       if (_prevChargeSlash != null) __instance.CurrentConfigGroup.ChargeSlash = _prevChargeSlash;
       if (_prevConfig != null) __instance.CurrentConfigGroup.Config = _prevConfig;
    }
-   
+ 
+   // Update config values to match equipped needle art
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
    [HarmonyPostfix]
    private static void SetConfigPost(HeroController __instance) {
+      var artEquipped = NeedleArtsPlugin.NeedleArts.FirstOrDefault(art => art.Value.ToolItem.IsEquipped);
+      if (artEquipped.Value == null) return;
+      
       _prevChargeSlash = __instance.CurrentConfigGroup.ChargeSlash;
       _prevConfig = Object.Instantiate(__instance.Config);
-      
-      var artEquipped = NeedleArtsPlugin.NeedleArts.FirstOrDefault(art => art.Value.ToolItem.IsEquipped);
-      if (artEquipped.Key == null) return;
-      
+    
       var artConfig = __instance.configs[artEquipped.Value.ConfigId];
       __instance.CurrentConfigGroup.ChargeSlash = artConfig.ChargeSlash;
-
+   
       var hcConfig = __instance.Config;
       hcConfig.chargeSlashRecoils = artConfig.Config.ChargeSlashRecoils;
       hcConfig.chargeSlashChain = artConfig.Config.ChargeSlashChain;
       hcConfig.chargeSlashLungeSpeed = artConfig.Config.ChargeSlashLungeSpeed;
       hcConfig.chargeSlashLungeDeceleration = artConfig.Config.ChargeSlashLungeDeceleration;
-      
+     
       if (artEquipped.Key is "HunterArt" or "WitchArt" or "ShamanArt") {
          var fsm = PlayMakerFSM.FindFsmOnGameObject(__instance.gameObject, "Nail Arts");
          fsm.GetState(artEquipped.Value.AnticName).GetAction<Tk2dPlayAnimationWithEvents>(artEquipped.Value.ActionId)
             .clipName = artEquipped.Value.AnimName;
       } 
-   }
+   }   
    
    [HarmonyPatch(typeof(PlayMakerFSM), nameof(PlayMakerFSM.Start))]
    [HarmonyPostfix]
@@ -107,4 +111,20 @@ internal class PatchChargedSlash {
       anticType.ChangeTransition("WARRIOR", "Warrior Antic");
    }
 
+   [HarmonyPatch(typeof(GameManager), nameof(GameManager.ReturnToMainMenu))]
+   [HarmonyPostfix]
+   private static void MainMenu() => ResetVariables();
+   
+   [HarmonyPatch(typeof(GameManager), nameof(GameManager.ReturnToMainMenuNoSave))]
+   [HarmonyPostfix]
+   private static void MainMenuNoSave() => ResetVariables();
+   
+   [HarmonyPatch(typeof(GameManager), nameof(GameManager.EmergencyReturnToMenu))]
+   [HarmonyPostfix]
+   private static void MainMenuEmergency() => ResetVariables();
+
+   private static void ResetVariables() {
+      _prevChargeSlash = null;
+      _prevConfig = null;
+   }
 }
