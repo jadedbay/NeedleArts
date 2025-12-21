@@ -32,17 +32,17 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 2, 0);
-        AddNeedleArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 3, 2);
-        AddNeedleArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 0, 4);
-        AddNeedleArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 0, 3);
-        AddNeedleArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 2, 6);
-        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 2, 5);
-        AddNeedleArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 2, 7);
+        AddNeedleArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0);
+        AddNeedleArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2);
+        AddNeedleArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4);
+        AddNeedleArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3);
+        AddNeedleArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6);
+        AddNeedleArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5);
+        AddNeedleArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7);
     }
 
-    public static void AddNeedleArt(string name, string eventName, string anticName, string animName, int actionId, int configId) {
-        NeedleArts.Add(name, new NeedleArt(eventName, anticName, animName, actionId, configId)); 
+    public static void AddNeedleArt(string name, string eventName, string anticName, string animName, int configId) {
+        NeedleArts.Add(name, new NeedleArt(eventName, anticName, animName, configId)); 
        
         var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{name}Icon.png");
         var sprite = Sprite.Create(
@@ -61,11 +61,10 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         ); 
     }
     
-    public class NeedleArt(string eventName, string anticName, string animName, int actionId, int configId) {
+    public class NeedleArt(string eventName, string anticName, string animName, int configId) {
         public readonly string EventName = eventName;
         public readonly string AnticName = anticName;
         public readonly string AnimName = animName;
-        public readonly int ActionId = actionId;
         public readonly int ConfigId = configId;
         
         public ToolItem ToolItem;

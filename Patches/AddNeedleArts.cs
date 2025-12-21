@@ -81,7 +81,7 @@ internal class AddNeedleArts {
      
       if (artEquipped.Key is "HunterArt" or "WitchArt" or "ShamanArt") {
          var fsm = PlayMakerFSM.FindFsmOnGameObject(__instance.gameObject, "Nail Arts");
-         fsm.GetState(artEquipped.Value.AnticName).GetAction<Tk2dPlayAnimationWithEvents>(artEquipped.Value.ActionId)
+         fsm.GetState(artEquipped.Value.AnticName).GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
             .clipName = artEquipped.Value.AnimName;
       } 
    }   
@@ -96,7 +96,7 @@ internal class AddNeedleArts {
       anticType.Actions = anticType.Actions
          .Where(action => action.GetType() != typeof(CheckIfCrestEquipped))
          .ToArray();
-
+      
       foreach (var needleArt in NeedleArtsPlugin.NeedleArts.Values) {
          anticType.AddAction(new CheckIfToolEquipped {
             Tool = new FsmObject { Value = needleArt.ToolItem },
@@ -104,7 +104,7 @@ internal class AddNeedleArts {
             storeValue = false,
          });
 
-         __instance.GetState(needleArt.AnticName).GetAction<Tk2dPlayAnimationWithEvents>(needleArt.ActionId)
+         __instance.GetState(needleArt.AnticName).GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
             .clipName = needleArt.AnimName;
       }
       
