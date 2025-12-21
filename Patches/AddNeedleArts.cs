@@ -9,9 +9,6 @@ using UnityEngine;
 namespace NeedleArts.Patches;
 [HarmonyPatch]
 internal class AddNeedleArts {
-   private static GameObject _prevChargeSlash;
-   private static HeroControllerConfig _prevConfig;
-  
    // Add all needle art animations to all config groups
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.Awake))]
    [HarmonyPostfix]
@@ -57,14 +54,6 @@ internal class AddNeedleArts {
    private static bool IsNeedleArtEquipped() {
       return NeedleArtsPlugin.NeedleArts.Values.Any(art => art.ToolItem.IsEquipped);
    }
-
-   // Set config values back
-   [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
-   [HarmonyPrefix]
-   private static void SetConfigPre(HeroController __instance) {
-      if (_prevChargeSlash != null) __instance.CurrentConfigGroup.ChargeSlash = _prevChargeSlash;
-      if (_prevConfig != null) __instance.CurrentConfigGroup.Config = _prevConfig;
-   }
  
    // Update config values to match equipped needle art
    [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
@@ -73,24 +62,54 @@ internal class AddNeedleArts {
       var artEquipped = NeedleArtsPlugin.NeedleArts.FirstOrDefault(art => art.Value.ToolItem.IsEquipped);
       if (artEquipped.Value == null) return;
       
-      _prevChargeSlash = __instance.CurrentConfigGroup.ChargeSlash;
-      _prevConfig = Object.Instantiate(__instance.Config);
-    
-      var artConfig = __instance.configs[artEquipped.Value.ConfigId];
-      __instance.CurrentConfigGroup.ChargeSlash = artConfig.ChargeSlash;
-      
-      var hcConfig = __instance.Config;
-      hcConfig.chargeSlashRecoils = artConfig.Config.ChargeSlashRecoils;
-      hcConfig.chargeSlashChain = artConfig.Config.ChargeSlashChain;
-      hcConfig.chargeSlashLungeSpeed = artConfig.Config.ChargeSlashLungeSpeed;
-      hcConfig.chargeSlashLungeDeceleration = artConfig.Config.ChargeSlashLungeDeceleration;
-     
       if (artEquipped.Key is "HunterArt" or "WitchArt" or "ShamanArt") {
          var fsm = PlayMakerFSM.FindFsmOnGameObject(__instance.gameObject, "Nail Arts");
          fsm.GetState(artEquipped.Value.AnticName).GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
             .clipName = artEquipped.Value.AnimName;
       } 
-   }   
+   }
+
+   [HarmonyPatch(typeof(GetHeroAttackObject), nameof(GetHeroAttackObject.GetGameObject))]
+   [HarmonyPostfix]
+   private static void PatchGetGameObject(GetHeroAttackObject __instance, ref GameObject __result) {
+      if ((GetHeroAttackObject.AttackObjects)__instance.Attack.Value != GetHeroAttackObject.AttackObjects.ChargeSlash) return;
+      
+      if (NeedleArtsPlugin.NeedleArts.Values.FirstOrDefault(art => art.ToolItem.IsEquipped) is { } artEquipped) {
+         __result = HeroController.instance.configs[artEquipped.ConfigId].ChargeSlash;
+      } 
+   }
+
+   [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashRecoils), MethodType.Getter)]
+   [HarmonyPostfix]
+   private static void PatchChargeSlashRecoils(ref bool __result) {
+      if (NeedleArtsPlugin.NeedleArts.Values.FirstOrDefault(art => art.ToolItem.IsEquipped) is { } artEquipped) {
+         __result = HeroController.instance.configs[artEquipped.ConfigId].Config.chargeSlashRecoils;
+      } 
+   }
+   
+   [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashChain), MethodType.Getter)]
+   [HarmonyPostfix]
+   private static void PatchChargeSlashChain(ref int __result) {
+      if (NeedleArtsPlugin.NeedleArts.Values.FirstOrDefault(art => art.ToolItem.IsEquipped) is { } artEquipped) {
+         __result = HeroController.instance.configs[artEquipped.ConfigId].Config.chargeSlashChain;
+      } 
+   } 
+   
+   [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashLungeSpeed), MethodType.Getter)]
+   [HarmonyPostfix]
+   private static void PatchChargeSlashLungeSpeed(ref float __result) {
+      if (NeedleArtsPlugin.NeedleArts.Values.FirstOrDefault(art => art.ToolItem.IsEquipped) is { } artEquipped) {
+         __result = HeroController.instance.configs[artEquipped.ConfigId].Config.chargeSlashLungeSpeed;
+      } 
+   }
+   
+   [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashLungeDeceleration), MethodType.Getter)]
+   [HarmonyPostfix]
+   private static void PatchChargeSlashLungeDeceleration(ref float __result) {
+      if (NeedleArtsPlugin.NeedleArts.Values.FirstOrDefault(art => art.ToolItem.IsEquipped) is { } artEquipped) {
+         __result = HeroController.instance.configs[artEquipped.ConfigId].Config.chargeSlashLungeDeceleration;
+      } 
+   }
    
    [HarmonyPatch(typeof(PlayMakerFSM), nameof(PlayMakerFSM.Start))]
    [HarmonyPostfix]
@@ -115,22 +134,5 @@ internal class AddNeedleArts {
       }
       
       //anticType.ChangeTransition("WARRIOR", "Warrior Antic");
-   }
-
-   [HarmonyPatch(typeof(GameManager), nameof(GameManager.ReturnToMainMenu))]
-   [HarmonyPostfix]
-   private static void MainMenu() => ResetVariables();
-   
-   [HarmonyPatch(typeof(GameManager), nameof(GameManager.ReturnToMainMenuNoSave))]
-   [HarmonyPostfix]
-   private static void MainMenuNoSave() => ResetVariables();
-   
-   [HarmonyPatch(typeof(GameManager), nameof(GameManager.EmergencyReturnToMenu))]
-   [HarmonyPostfix]
-   private static void MainMenuEmergency() => ResetVariables();
-
-   private static void ResetVariables() {
-      _prevChargeSlash = null;
-      _prevConfig = null;
    }
 }
