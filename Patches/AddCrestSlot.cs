@@ -12,6 +12,7 @@ internal class AddCrestSlot {
     private static void AddNeedleArtSlot(ToolItemManager __instance) {
         foreach (var crest in __instance.crestList) {
             if (crest.Slots.IsNullOrEmpty()) continue;
+            if (crest.Slots.Any(s => s.Type == NeedleArtsPlugin.NeedleArtsToolType.Type)) continue;
 
             var minY = crest.Slots.Min(s => s.Position.y);
             var minIndex = Array.FindIndex(crest.Slots, x => x.Position.y == minY);
