@@ -21,7 +21,8 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
-        new Color(123.0f / 255.0f, 183.0f / 255.0f, 126.0f / 255.0f)
+        //new Color(123.0f / 255.0f, 183.0f / 255.0f, 126.0f / 255.0f)
+        new Color(0.996f, 0.6f, 0.29f)
     );
     
     private void Awake() {
@@ -34,13 +35,13 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0));
+        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, true));
         AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2));
         AddNeedleArt(new CrestArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4));
         AddNeedleArt(new CrestArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3));
-        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6));
+        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6, true));
         AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5));
-        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7));
+        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, true));
     }
 
     public static void AddNeedleArt(NeedleArt needleArt) {
@@ -69,5 +70,10 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
 
     public static NeedleArt? GetEquippedNeedleArt() {
         return NeedleArts.FirstOrDefault(art => art.ToolItem.IsEquipped);
+    }
+
+    // TODO: Update this to later work when multiple needle arts equipped
+    public static NeedleArt GetCurrentNeedleArt() {
+        return GetEquippedNeedleArt();
     }
 }

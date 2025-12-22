@@ -9,5 +9,4 @@ public abstract class NeedleArt(string name) {
     public abstract GameObject GetChargeSlash();
     public abstract HeroControllerConfig GetConfig();
     public abstract void EditFsm(PlayMakerFSM fsm);
-    public virtual void UpdateFsm(PlayMakerFSM fsm) { }
 }

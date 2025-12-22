@@ -1,16 +1,17 @@
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using NeedleArts.Actions;
 using Silksong.FsmUtil;
 using UnityEngine;
 
 namespace NeedleArts.ArtTools;
 
-public class CrestArt(string name, string eventName, string anticName, string animName, int configId)
+public class CrestArt(string name, string eventName, string anticName, string animName, int configId, bool useDynamicClipUpdate = false)
     : NeedleArt(name) {
-    private string EventName { get; } = eventName;
-    private string AnticName { get; } = anticName;
-    private string AnimName { get; } = animName;
-    private int ConfigId { get; } = configId;
+    public string EventName { get; } = eventName;
+    public int ConfigId { get; } = configId;
+    public string AnticName { get; } = anticName;
+    public string AnimName { get; } = animName;
 
     public override GameObject GetChargeSlash() {
         return HeroController.instance.configs[ConfigId].ChargeSlash;
@@ -28,12 +29,16 @@ public class CrestArt(string name, string eventName, string anticName, string an
             trueEvent = FsmEvent.GetFsmEvent(EventName),
             storeValue = false,
         });
-         
-        fsm.GetState(AnticName).GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
-            .clipName = AnimName;
-    }
 
-    public override void UpdateFsm(PlayMakerFSM fsm) {
-        fsm.GetStringVariable("ClipName").Value = AnimName;
-    } 
+        if (useDynamicClipUpdate) {
+            fsm.GetState(AnticName).AddActionAtIndex(new UpdateClipName {
+                needleArtName = Name,
+                animName = AnimName,
+            }, 0);
+        }
+        else {
+            fsm.GetState(AnticName).GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
+                .clipName = AnimName;
+        }
+    }
 }

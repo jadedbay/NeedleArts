@@ -1,4 +1,4 @@
 # NeedleArts
 
-A Hollow Knight: Silksong mod, which adds the ability to equip a Needle Strike from another crest.
+A Hollow Knight: Silksong mod, adds the ability to equip Needle Strikes from other crests.
 

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using HutongGames.PlayMaker.Actions;
@@ -14,19 +13,8 @@ internal class PatchChargedSlash {
    private static bool IsNeedleArtEquipped() {
       return NeedleArtsPlugin.NeedleArts.Any(art => art.ToolItem.IsEquipped);
    }
- 
-   // Update config values to match equipped needle art
-   [HarmonyPatch(typeof(HeroController), nameof(HeroController.SetConfigGroup))]
-   [HarmonyPostfix]
-   private static void SetConfigPost(HeroController __instance) {
-      if (NeedleArtsPlugin.GetEquippedNeedleArt() is not { } artEquipped) return;
-      
-      if (artEquipped.Name is "HunterArt" or "WitchArt" or "ShamanArt") {
-         var fsm = PlayMakerFSM.FindFsmOnGameObject(__instance.gameObject, "Nail Arts");
-         artEquipped.UpdateFsm(fsm);
-      }
-   }
-
+  
+   // Patch config values to return equipped needle art values
    [HarmonyPatch(typeof(GetHeroAttackObject), nameof(GetHeroAttackObject.GetGameObject))]
    [HarmonyPostfix]
    private static void PatchGetGameObject(GetHeroAttackObject __instance, ref GameObject __result) {
@@ -84,11 +72,13 @@ internal class PatchChargedSlash {
          needleArt.EditFsm(__instance);
       }
      
+      __instance.AddStringVariable("NeedleArtName");
+      
       // For hunter/witch/shaman arts (they share antic states)
       __instance.AddStringVariable("ClipName");
       __instance.GetState("Antic").GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
          .clipName = __instance.GetStringVariable("ClipName");
-
+      
       //anticType.ChangeTransition("WARRIOR", "Warrior Antic");
    }
 }
