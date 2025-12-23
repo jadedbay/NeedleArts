@@ -22,7 +22,7 @@ internal class AddCrestSlot {
             crest.Slots[minIndex].NavDownIndex = crest.Slots.Length;
 
             var slot = new ToolCrest.SlotInfo {
-                IsLocked = true,
+                IsLocked = false,
                 Position = new Vector2(0.0f, -4.43f),
                 NavUpFallbackIndex = -1,
                 NavDownFallbackIndex = -1,
@@ -56,13 +56,11 @@ internal class AddCrestSlot {
         };
     }
 
-    [HarmonyPatch(typeof(InventoryItemToolManager), nameof(InventoryItemToolManager.CanUnlockSlot), MethodType.Getter)]
+    [HarmonyPatch(typeof(InventoryToolCrestSlot), nameof(InventoryToolCrestSlot.OnEnable))]
     [HarmonyPostfix]
-    private static void DisableSlotUnlock(InventoryItemToolManager __instance, ref bool __result) {
-        if ((__instance.CurrentSelected as InventoryToolCrestSlot) is not { } slot) return;
-        
-        if (slot.Type == NeedleArtsPlugin.NeedleArtsToolType.Type) {
-            __result = false;
+    private static void DisableNeedleArtSlot(InventoryToolCrestSlot __instance) {
+        if (__instance.Type == NeedleArtsPlugin.NeedleArtsToolType.Type && !PlayerData.instance.hasChargeSlash) {
+            __instance.gameObject.SetActive(false);
         }
     }
 }

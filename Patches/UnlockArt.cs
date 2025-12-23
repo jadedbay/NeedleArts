@@ -32,6 +32,6 @@ internal class UnlockArt {
     private static void UnlockAtPinstress(PlayMakerFSM __instance) {
         if (__instance is not { name: "Pinstress Interior Ground Sit", FsmName: "Behaviour" }) return;
         
-        __instance.GetState("Save").AddActionAtIndex(new UnlockCrestArts(), 4);
+        __instance.GetState("Save").AddActionAtIndex(new UnlockNeedleArts(), 4);
     }
 }
