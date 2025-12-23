@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Linq;
 using HarmonyLib;
+using NeedleArts.Actions;
+using Silksong.FsmUtil;
 
 namespace NeedleArts.Patches;
 
@@ -18,20 +20,18 @@ internal class UnlockArt {
         if (!__state && __instance.SaveData.IsUnlocked) {
             if (__instance.Crest.CrestData.Slots.Any(slot => slot.IsLocked)) return;
             if (!PlayerData.instance.hasChargeSlash) return;
-            
-            var artName = __instance.Crest.name switch {
-                "Hunter" => "HunterArt",
-                "Reaper" => "ReaperArt",
-                "Wanderer" => "WandererArt",
-                "Warrior" => "BeastArt",
-                "Witch" => "WitchArt",
-                "Toolmaster" => "ArchitectArt",
-                "Spell" => "ShamanArt",
-                _ => null,
-            };
-            if (artName == null) return;
-            
-            NeedleArtsPlugin.GetNeedleArtByName(artName).ToolItem.Unlock();
+
+            if (CrestArtUtil.GetArtName(__instance.Crest.name) is { } artName) {
+                NeedleArtsPlugin.GetNeedleArtByName(artName).ToolItem.Unlock();
+            }
         }
+    }
+
+    [HarmonyPatch(typeof(PlayMakerFSM), nameof(PlayMakerFSM.Awake))]
+    [HarmonyPostfix]
+    private static void UnlockAtPinstress(PlayMakerFSM __instance) {
+        if (__instance is not { name: "Pinstress Interior Ground Sit", FsmName: "Behaviour" }) return;
+        
+        __instance.GetState("Save").AddActionAtIndex(new UnlockCrestArts(), 4);
     }
 }
