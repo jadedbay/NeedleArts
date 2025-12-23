@@ -33,8 +33,4 @@ public static class Util {
             wrapMode = clip.wrapMode
         };
     }
-
-    public static HeroController.ConfigGroup GetConfigGroup(this HeroController hc, string name) {
-        return hc.configs.FirstOrDefault(config => config.ActiveRoot.name == name);
-    }
 }

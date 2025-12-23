@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace NeedleArts.Patches;
 
 [HarmonyPatch]
-public class CopyAnims {
+internal class CopyAnims {
    private static bool _hasAddedAnims;
    
    // Add all needle art animations to all config groups
