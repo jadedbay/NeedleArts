@@ -29,4 +29,8 @@ public static class CrestArtUtil {
     public static IEnumerable<(string CrestName, string ArtName)> GetAllPairs() {
         return CrestToArt.Select(kvp => (kvp.Key, kvp.Value));
     }
+
+    public static bool IsValidVanillaCrest(string crestName) {
+        return GetArtName(crestName) != null ? true : false;
+    }
 }
