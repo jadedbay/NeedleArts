@@ -21,8 +21,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
-        //new Color(123.0f / 255.0f, 183.0f / 255.0f, 126.0f / 255.0f)
-        new Color(0.996f, 0.6f, 0.29f)
+        new Color(0.966f, 0.6f, 0.29f)
     );
     
     private void Awake() {
@@ -43,7 +42,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5));
         AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, true));
     }
-
+    
     public static void AddNeedleArt(NeedleArt needleArt) {
         NeedleArts.Add(needleArt); 
         
@@ -55,13 +54,15 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             260f
         );
         
-        NeedleforgePlugin.AddTool(
+        var tool = NeedleforgePlugin.AddTool(
             needleArt.Name,
             NeedleArtsToolType.Type,
             new LocalisedString { Key = $"{needleArt.Name}_Tool", Sheet = $"Mods.{Id}" },
             new LocalisedString { Key = $"{needleArt.Name}_ToolDesc", Sheet = $"Mods.{Id}" },
             sprite
-        ); 
+        );
+
+        tool.UnlockedAtStart = false;
     }
 
     public static NeedleArt? GetNeedleArtByName(string name) {
