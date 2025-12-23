@@ -5,7 +5,7 @@ namespace NeedleArts.Actions;
 
 public class UnlockNeedleArts : FsmStateAction {
     public override void OnEnter() {
-        Util.AutoEquip("Hunter", NeedleArtsPlugin.GetNeedleArtByName("HunterArt").ToolItem);
+        ToolItemManagerUtil.AutoEquip("Hunter", NeedleArtsPlugin.GetNeedleArtByName("HunterArt").ToolItem);
        
         // Unlock art if all crest slots unlocked
         foreach (var (crestName, artName) in CrestArtUtil.GetAllPairs()) {
