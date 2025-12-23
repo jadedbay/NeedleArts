@@ -63,4 +63,13 @@ internal class AddCrestSlot {
             __instance.gameObject.SetActive(false);
         }
     }
+
+    [HarmonyPatch(typeof(InventoryItemToolManager), nameof(InventoryItemToolManager.UnequipTool))]
+    [HarmonyPostfix]
+    private static void AutoEquip(InventoryItemToolManager __instance, InventoryToolCrestSlot slot) {
+        if (slot.Type == NeedleArtsPlugin.NeedleArtsToolType.Type) {
+            var artTool = NeedleArtsPlugin.GetNeedleArtByName(CrestArtUtil.GetArtName(PlayerData.instance.CurrentCrestID));
+            __instance.TryPickupOrPlaceTool(artTool.ToolItem);
+        }
+    }
 }

@@ -7,13 +7,6 @@ using UnityEngine;
 namespace NeedleArts.Patches;
 [HarmonyPatch]
 internal class PatchChargedSlash {
-   // Disable charged slash if no needle art equipped
-   [HarmonyPatch(typeof(HeroController), nameof(HeroController.CanNailCharge))]
-   [HarmonyPrefix]
-   private static bool IsNeedleArtEquipped() {
-      return NeedleArtsPlugin.NeedleArts.Any(art => art.ToolItem.IsEquipped);
-   }
-  
    // Patch config values to return equipped needle art values
    [HarmonyPatch(typeof(GetHeroAttackObject), nameof(GetHeroAttackObject.GetGameObject))]
    [HarmonyPostfix]
