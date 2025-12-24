@@ -43,7 +43,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private void InitializeConfig() {
         UnlockNeedleArts = Config.Bind(
             "In-Game",
-            "Unlock Needle Arts (Button)",
+            "Unlock Needle Arts",
             false,
             "Instantly unlock all needle arts."
         );
