@@ -14,6 +14,7 @@ namespace NeedleArts;
 
 [BepInAutoPlugin(id: "io.github.jadedbay.needlearts")]
 [BepInDependency("org.silksong-modding.i18n")]
+[BepInDependency("org.silksong-modding.fsmutil")]
 public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony = new(Id);
     internal static ManualLogSource Log;
