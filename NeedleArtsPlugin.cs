@@ -45,12 +45,15 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             "In-Game",
             "Unlock Needle Arts",
             false,
-            "Instantly unlock all needle arts."
+            "Unlock Needle Strike and all Needle Arts."
         );
 
         UnlockNeedleArts.SettingChanged += (_, _) => {
             if (UnlockNeedleArts.Value) {
-                if (PlayerData.instance != null) {
+                if (PlayerData.instance is { } data) {
+                    data.hasChargeSlash = true;
+                    ToolItemManagerUtil.AutoEquip("Hunter", GetNeedleArtByName("HunterArt").ToolItem);
+                    
                     foreach (var needleArt in NeedleArts) {
                         needleArt.ToolItem.Unlock();
                     }

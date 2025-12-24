@@ -10,7 +10,7 @@ A Hollow Knight: Silksong mod, adds the ability to equip Needle Strikes from oth
 ### Balancing / Progression
 - The slot won't appear until Needle Strike is unlocked.
 
-- To unlock a crest's Needle Strike/Art as a tool, you must unlock all tool slots on that crest. (Alternatively if you just want to play around with the mod there is a button in the mod menu to unlock all NeedleArts tools.)
+- To unlock a crest's Needle Strike/Art as a tool, you must unlock all tool slots on that crest. (Alternatively if you just want to play around with the mod there is a button in the mod menu to unlock Needle Strike and all NeedleArts tools.)
 
 ## Future Plans
 - Add custom Needle Arts
