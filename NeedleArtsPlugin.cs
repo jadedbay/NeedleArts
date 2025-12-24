@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using NeedleArts.ArtTools;
@@ -23,6 +24,10 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         "NeedleArts",
         new Color(0.966f, 0.6f, 0.29f)
     );
+   
+    // -----Config-----
+    public static ConfigEntry<bool> UnlockNeedleArts;
+    // ----------------
     
     private void Awake() {
         Log = Logger;
@@ -30,7 +35,30 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
         harmony.PatchAll();
         
+        InitializeConfig();
+        
         InitializeNeedleArtTools();
+    }
+
+    private void InitializeConfig() {
+        UnlockNeedleArts = Config.Bind(
+            "In-Game",
+            "Unlock Needle Arts (Button)",
+            false,
+            "Instantly unlock all needle arts."
+        );
+
+        UnlockNeedleArts.SettingChanged += (_, _) => {
+            if (UnlockNeedleArts.Value) {
+                if (PlayerData.instance != null) {
+                    foreach (var needleArt in NeedleArts) {
+                        needleArt.ToolItem.Unlock();
+                    }
+                }
+                
+                UnlockNeedleArts.Value = false;
+            }
+        };
     }
 
     private static void InitializeNeedleArtTools() {
