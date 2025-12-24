@@ -18,6 +18,7 @@ public static class CrestArtUtil {
         CrestToArt.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
 
     public static string GetArtName(string crestName) {
+        crestName = crestName.Contains("Hunter") ? "Hunter" : crestName;
         return CrestToArt.TryGetValue(crestName, out var art) ? art : null;
     }
 
@@ -27,5 +28,9 @@ public static class CrestArtUtil {
     
     public static IEnumerable<(string CrestName, string ArtName)> GetAllPairs() {
         return CrestToArt.Select(kvp => (kvp.Key, kvp.Value));
+    }
+
+    public static bool IsValidVanillaCrest(string crestName) {
+        return GetArtName(crestName) != null ? true : false;
     }
 }
