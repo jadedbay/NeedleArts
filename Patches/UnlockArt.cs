@@ -2,6 +2,7 @@ using System.Linq;
 using HarmonyLib;
 using NeedleArts.Actions;
 using Silksong.FsmUtil;
+using UnityEngine;
 
 namespace NeedleArts.Patches;
 
@@ -17,13 +18,10 @@ internal class UnlockArt {
     [HarmonyPostfix]
     private static void UnlockNeedleArtPost(InventoryToolCrestSlot __instance, bool __state) {
         if (!__state && __instance.SaveData.IsUnlocked) {
-            
-            //if (__instance.Crest.CrestData.Slots.Any(slot => slot.IsLocked)) return;
             if (!PlayerData.instance.hasChargeSlash) return;
-
             
-            if (CrestArtUtil.GetArtName(__instance.Crest.name) is { } artName) {
-                NeedleArtsPlugin.GetNeedleArtByName(artName).ToolItem.Unlock();
+            if (__instance.Crest.GetSlots().All(slot => !slot.IsLocked)) {
+                NeedleArtsPlugin.GetNeedleArtByName(CrestArtUtil.GetArtName(__instance.Crest.name)).ToolItem.Unlock();
             }
         }
     }
@@ -33,7 +31,11 @@ internal class UnlockArt {
     private static void UnlockAtPinstress(PlayMakerFSM __instance) {
         if (__instance is not { name: "Pinstress Interior Ground Sit", FsmName: "Behaviour" }) return;
         
-        __instance.GetState("Save").AddActionAtIndex(new UnlockNeedleArts(), 4);
+        __instance.GetState("Save").AddActionAtIndex(new UnlockNeedleArts {
+            manager = new(Resources
+                .FindObjectsOfTypeAll<InventoryItemToolManager>()
+                .FirstOrDefault(m => m.gameObject.scene.IsValid()).gameObject)
+        }, 4);
     }
     
     [HarmonyPatch(typeof(ToolItemManager), nameof(ToolItemManager.AutoEquip), 
