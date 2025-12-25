@@ -41,6 +41,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         InitializeConfig();
         
         InitializeNeedleArtTools();
+        InitializeCrest();
     }
     
     private static void InitializeNeedleArtTools() {
@@ -131,5 +132,16 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
                 UnlockNeedleArts.Value = false;
             }
         };
+    }
+
+    private static void InitializeCrest() {
+        var crest = NeedleforgePlugin.AddCrest($"SentinelCrest_{Id}",
+            new LocalisedString { Key = "SentinelCrest_Name", Sheet = $"Mods.{Id}"},
+            new LocalisedString { Key = "SentinelCrest_Desc", Sheet = $"Mods.{Id}"}
+        );
+        
+        crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Neutral, new Vector2(0.0f, -0.61f), false);
+        crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Up, new Vector2(0.0f, 1.16f), false);
+        crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Down, new Vector2(0.0f, -2.52f), false);
     }
 }
