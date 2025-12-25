@@ -27,6 +27,8 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     );
    
     // -----Config-----
+    public static ConfigEntry<bool> SimpleUnlock;
+    
     public static ConfigEntry<bool> UnlockNeedleArts;
     // ----------------
     
@@ -40,39 +42,15 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         
         InitializeNeedleArtTools();
     }
-
-    private void InitializeConfig() {
-        UnlockNeedleArts = Config.Bind(
-            "In-Game",
-            "Unlock Needle Arts",
-            false,
-            "Unlock Needle Strike and all Needle Arts."
-        );
-
-        UnlockNeedleArts.SettingChanged += (_, _) => {
-            if (UnlockNeedleArts.Value) {
-                if (PlayerData.instance is { } data) {
-                    data.hasChargeSlash = true;
-                    ToolItemManagerUtil.AutoEquip("Hunter", GetNeedleArtByName("HunterArt").ToolItem);
-                    
-                    foreach (var needleArt in NeedleArts) {
-                        needleArt.ToolItem.Unlock();
-                    }
-                }
-                
-                UnlockNeedleArts.Value = false;
-            }
-        };
-    }
-
+    
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, true));
-        AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2));
-        AddNeedleArt(new CrestArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4));
-        AddNeedleArt(new CrestArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3));
-        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6, true));
-        AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5));
-        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, true));
+        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, null, true));
+        AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2, "completedMemory_reaper"));
+        AddNeedleArt(new CrestArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4, "completedMemory_wanderer"));
+        AddNeedleArt(new CrestArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3, "completedMemory_beast"));
+        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6, "completedMemory_witch", true));
+        AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5, "completedMemory_toolmaster"));
+        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, "completedMemory_shaman", true));
     }
     
     public static void AddNeedleArt(NeedleArt needleArt) {
@@ -108,5 +86,50 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     // TODO: Update this to later work when multiple needle arts equipped
     public static NeedleArt GetCurrentNeedleArt() {
         return GetEquippedNeedleArt();
+    }
+    
+    private void InitializeConfig() {
+        SimpleUnlock = Config.Bind(
+            "Gameplay",
+            "Simple CrestArt Unlock",
+            false,
+            "True = Unlock when crest unlocked, False = Unlock when all slots of crest unlocked."
+        );
+
+        SimpleUnlock.SettingChanged += (_, _) => {
+            if (PlayerData.instance == null) return;
+            
+            if (SimpleUnlock.Value) {
+                foreach (var crestArt in NeedleArts.OfType<CrestArt>()) {
+                    crestArt.AddSimpleUnlockTest();
+                }
+            } else {
+                foreach (var crestArt in NeedleArts.OfType<CrestArt>()) {
+                    crestArt.RemoveSimpleUnlockTest();
+                }
+            }
+        };
+        
+        UnlockNeedleArts = Config.Bind(
+            "Cheats/Testing",
+            "Unlock Needle Arts",
+            false,
+            "Instantly unlock Needle Strike and all Needle Arts."
+        );
+
+        UnlockNeedleArts.SettingChanged += (_, _) => {
+            if (UnlockNeedleArts.Value) {
+                if (PlayerData.instance is { } data) {
+                    data.hasChargeSlash = true;
+                    ToolItemManagerUtil.AutoEquip("Hunter", GetNeedleArtByName("HunterArt").ToolItem);
+                    
+                    foreach (var needleArt in NeedleArts) {
+                        needleArt.ToolItem.Unlock();
+                    }
+                }
+                
+                UnlockNeedleArts.Value = false;
+            }
+        };
     }
 }

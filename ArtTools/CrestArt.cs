@@ -1,3 +1,4 @@
+using HarmonyLib;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using NeedleArts.Actions;
@@ -6,12 +7,13 @@ using UnityEngine;
 
 namespace NeedleArts.ArtTools;
 
-public class CrestArt(string name, string eventName, string anticName, string animName, int configId, bool useDynamicClipUpdate = false)
+public class CrestArt(string name, string eventName, string anticName, string animName, int configId, string? crestDataField, bool useDynamicClipUpdate = false)
     : NeedleArt(name) {
     public string EventName { get; } = eventName;
     public int ConfigId { get; } = configId;
     public string AnticName { get; } = anticName;
     public string AnimName { get; } = animName;
+    public string? CrestDataField { get; } = crestDataField;
 
     public override GameObject GetChargeSlash() {
         return HeroController.instance.configs[ConfigId].ChargeSlash;
@@ -40,5 +42,35 @@ public class CrestArt(string name, string eventName, string anticName, string an
             fsm.GetState(AnticName).GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
                 .clipName = AnimName;
         }
+    }
+
+    public void AddSimpleUnlockTest() {
+        PlayerDataTest.TestGroup[] testGroups = [
+            ..ToolItem.alternateUnlockedTest.TestGroups,
+            new() {
+                Tests = [
+                    ..CrestDataField != null ? new [] {
+                        new PlayerDataTest.Test {
+                            Type = PlayerDataTest.TestType.Bool,
+                            FieldName = CrestDataField,
+                            BoolValue = true,
+                        }
+                    } : [],
+                    new PlayerDataTest.Test {
+                        Type = PlayerDataTest.TestType.Bool,
+                        FieldName = "hasChargeSlash",
+                        BoolValue = true,
+                    }
+                ]
+            }
+        ];
+
+        ToolItem.alternateUnlockedTest = new PlayerDataTest {
+            TestGroups = testGroups
+        };
+    }
+
+    public void RemoveSimpleUnlockTest() {
+        ToolItem.alternateUnlockedTest = new PlayerDataTest();
     }
 }
