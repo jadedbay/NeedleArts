@@ -12,8 +12,6 @@ internal class PatchToolMaker {
         var needleArt = NeedleArtsPlugin.GetNeedleArtByName(toolItem.name);
         needleArt.ToolItem = toolItem;
 
-        if (NeedleArtsPlugin.SimpleUnlock.Value) {
-            (needleArt as CrestArt)?.AddSimpleUnlockTest();
-        }
+        needleArt.EditToolItem();
     }
 }

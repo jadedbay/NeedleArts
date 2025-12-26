@@ -53,6 +53,17 @@
           "UnityEngine.Modules": "6000.0.50"
         }
       },
+      "Silksong.DataManager": {
+        "type": "Direct",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "j9JR5Nbspwm1s1ese5kksHzaAWxMvfHuBe0EOwnF+R0Lxpb6nVY57tXY0s+A/AjmXP9tv+vdPj91ayeGNMR3Kg==",
+        "dependencies": {
+          "BepInEx.Core": "5.4.21",
+          "HarmonyX": "2.9.0",
+          "UnityEngine.Modules": "6000.0.50"
+        }
+      },
       "Silksong.FsmUtil": {
         "type": "Direct",
         "requested": "[0.3.4, )",

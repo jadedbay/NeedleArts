@@ -5,19 +5,30 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using NeedleArts.ArtTools;
+using NeedleArts.Data;
 using Needleforge;
 using Needleforge.Data;
+using Silksong.DataManager;
 using TeamCherry.Localization;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 namespace NeedleArts;
+
+public class ConfigData : PlayerDataExt {
+    public bool SimpleUnlock = false;
+}
 
 [BepInAutoPlugin(id: "io.github.jadedbay.needlearts")]
 [BepInDependency("org.silksong-modding.i18n")]
 [BepInDependency("org.silksong-modding.fsmutil")]
-public partial class NeedleArtsPlugin : BaseUnityPlugin {
-    private Harmony harmony = new(Id);
+[BepInDependency("org.silksong-modding.datamanager")]
+public partial class NeedleArtsPlugin : BaseUnityPlugin, IProfileDataMod<ConfigData> {
+    internal static NeedleArtsPlugin Instance { get; private set; }
     internal static ManualLogSource Log;
+    private Harmony harmony = new(Id);
+    
+    public ConfigData? ProfileData { get; set; }
     
     public static List<NeedleArt> NeedleArts = [];
     
@@ -33,16 +44,22 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     // ----------------
     
     private void Awake() {
+        Instance = this;
         Log = Logger;
         
-        Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
+        Log.LogInfo($"Plugin {Name} ({Id}) has loaded!");
         harmony.PatchAll();
         
         InitializeConfig();
         
         InitializeNeedleArtTools();
     }
-    
+
+    private void Start() {
+        ProfileData ??= new ConfigData();
+
+        SimpleUnlock.Value = ProfileData.SimpleUnlock;
+    }    
     private static void InitializeNeedleArtTools() {
         AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, null, true));
         AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2, "completedMemory_reaper"));
@@ -97,17 +114,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         );
 
         SimpleUnlock.SettingChanged += (_, _) => {
-            if (PlayerData.instance == null) return;
-            
-            if (SimpleUnlock.Value) {
-                foreach (var crestArt in NeedleArts.OfType<CrestArt>()) {
-                    crestArt.AddSimpleUnlockTest();
-                }
-            } else {
-                foreach (var crestArt in NeedleArts.OfType<CrestArt>()) {
-                    crestArt.RemoveSimpleUnlockTest();
-                }
-            }
+            ProfileData.SimpleUnlock = SimpleUnlock.Value;
         };
         
         UnlockNeedleArts = Config.Bind(
