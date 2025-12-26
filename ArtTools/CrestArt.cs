@@ -70,7 +70,7 @@ public class CrestArt(string name, string eventName, string anticName, string an
             }
         ];
 
-        ToolItem.alternateUnlockedTest = new PlayerDataTest(NeedleArtsPlugin.Instance.ProfileData) {
+        ToolItem.alternateUnlockedTest = new PlayerDataTest(NeedleArtsPlugin.PlayerDataExt) {
             TestGroups = testGroups,
         };
     }
