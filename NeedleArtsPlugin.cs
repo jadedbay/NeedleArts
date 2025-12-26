@@ -23,7 +23,8 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
-        new Color(0.966f, 0.6f, 0.29f)
+        new Color(0.966f, 0.6f, 0.29f),
+        true
     );
    
     // -----Config-----
@@ -45,13 +46,13 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
     
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, null, true));
+        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, null));
         AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2, "completedMemory_reaper"));
         AddNeedleArt(new CrestArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4, "completedMemory_wanderer"));
         AddNeedleArt(new CrestArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3, "completedMemory_beast"));
-        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6, "completedMemory_witch", true));
+        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6, "completedMemory_witch"));
         AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5, "completedMemory_toolmaster"));
-        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, "completedMemory_shaman", true));
+        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, "completedMemory_shaman"));
     }
     
     public static void AddNeedleArt(NeedleArt needleArt) {
@@ -80,13 +81,21 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         return NeedleArts.FirstOrDefault(art => art.Name == name);
     }
 
-    public static NeedleArt? GetEquippedNeedleArt() {
-        return NeedleArts.FirstOrDefault(art => art.ToolItem.IsEquipped);
-    }
-
-    // TODO: Update this to later work when multiple needle arts equipped
-    public static NeedleArt GetCurrentNeedleArt() {
-        return GetEquippedNeedleArt();
+    public static NeedleArt? GetSelectedNeedleArt() {
+        var inputHandler = HeroController.instance.inputHandler;
+        
+        var toolItem =
+            ToolItemManager.GetBoundAttackTool(AttackToolBinding.Neutral, ToolEquippedReadSource.Active);
+        
+        if (inputHandler.inputActions.Up.IsPressed) {
+            var dirToolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Up, ToolEquippedReadSource.Active);
+            if (dirToolItem != null) toolItem = dirToolItem;
+        } else if (inputHandler.inputActions.Down.IsPressed) {
+            var dirToolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Down, ToolEquippedReadSource.Active);
+            if (dirToolItem != null) toolItem = dirToolItem;
+        }
+        
+        return GetNeedleArtByName(toolItem.name);
     }
     
     private void InitializeConfig() {
@@ -135,13 +144,15 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeCrest() {
-        var crest = NeedleforgePlugin.AddCrest($"SentinelCrest_{Id}",
-            new LocalisedString { Key = "SentinelCrest_Name", Sheet = $"Mods.{Id}"},
-            new LocalisedString { Key = "SentinelCrest_Desc", Sheet = $"Mods.{Id}"}
+        var crest = NeedleforgePlugin.AddCrest($"PinmasterCrest_{Id}",
+            new LocalisedString { Key = "PinmasterCrest_Name", Sheet = $"Mods.{Id}"},
+            new LocalisedString { Key = "PinmasterCrest_Desc", Sheet = $"Mods.{Id}"}
         );
         
         crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Neutral, new Vector2(0.0f, -0.61f), false);
         crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Up, new Vector2(0.0f, 1.16f), false);
         crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Down, new Vector2(0.0f, -2.52f), false);
+        
+        crest.ApplyAutoSlotNavigation();
     }
 }

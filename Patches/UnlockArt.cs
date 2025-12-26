@@ -1,5 +1,6 @@
 using System.Linq;
 using HarmonyLib;
+using HutongGames.PlayMaker;
 using NeedleArts.Actions;
 using Silksong.FsmUtil;
 using UnityEngine;
@@ -31,11 +32,13 @@ internal class UnlockArt {
     private static void UnlockAtPinstress(PlayMakerFSM __instance) {
         if (__instance is not { name: "Pinstress Interior Ground Sit", FsmName: "Behaviour" }) return;
         
-        __instance.GetState("Save").AddActionAtIndex(new UnlockNeedleArts {
-            manager = new(Resources
-                .FindObjectsOfTypeAll<InventoryItemToolManager>()
-                .FirstOrDefault(m => m.gameObject.scene.IsValid()).gameObject)
-        }, 4);
+        __instance.GetState("Save").InsertAction(4, 
+            new UnlockNeedleArts {
+                manager = new FsmGameObject(Resources
+                    .FindObjectsOfTypeAll<InventoryItemToolManager>()
+                    .FirstOrDefault(m => m.gameObject.scene.IsValid()).gameObject)
+            }
+        );
     }
     
     [HarmonyPatch(typeof(ToolItemManager), nameof(ToolItemManager.AutoEquip), 
