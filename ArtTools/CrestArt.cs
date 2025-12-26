@@ -33,12 +33,17 @@ public class CrestArt(string name, string eventName, string anticName, string an
         fsm.GetState(AnticName).GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
             .clipName = fsm.GetStringVariable("ClipName");
     }
-
-    public void AddSimpleUnlockTest() {
+    
+    public override void EditToolItem() {
         PlayerDataTest.TestGroup[] testGroups = [
             ..ToolItem.alternateUnlockedTest.TestGroups,
             new() {
                 Tests = [
+                    new PlayerDataTest.Test {
+                        Type = PlayerDataTest.TestType.Bool,
+                        FieldName = "SimpleUnlock",
+                        BoolValue = true,
+                    },
                     ..CrestDataField != null ? new [] {
                         new PlayerDataTest.Test {
                             Type = PlayerDataTest.TestType.Bool,
@@ -55,12 +60,8 @@ public class CrestArt(string name, string eventName, string anticName, string an
             }
         ];
 
-        ToolItem.alternateUnlockedTest = new PlayerDataTest {
-            TestGroups = testGroups
+        ToolItem.alternateUnlockedTest = new PlayerDataTest(NeedleArtsPlugin.Instance.ProfileData) {
+            TestGroups = testGroups,
         };
-    }
-
-    public void RemoveSimpleUnlockTest() {
-        ToolItem.alternateUnlockedTest = new PlayerDataTest();
     }
 }

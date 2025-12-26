@@ -5,21 +5,31 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using NeedleArts.ArtTools;
+using NeedleArts.Data;
 using NeedleArts.Managers;
 using Needleforge;
 using Needleforge.Data;
+using Silksong.DataManager;
 using TeamCherry.Localization;
 using UnityEngine;
 
 namespace NeedleArts;
 
+public class ConfigData : PlayerDataExt {
+    public bool SimpleUnlock = false;
+}
+
 [BepInAutoPlugin(id: "io.github.jadedbay.needlearts")]
 [BepInDependency("org.silksong-modding.i18n")]
 [BepInDependency("org.silksong-modding.fsmutil")]
-public partial class NeedleArtsPlugin : BaseUnityPlugin {
-    private Harmony harmony = new(Id);
+[BepInDependency("org.silksong-modding.datamanager")]
+public partial class NeedleArtsPlugin : BaseUnityPlugin, IProfileDataMod<ConfigData> {
+    internal static NeedleArtsPlugin Instance { get; private set; }
     internal static ManualLogSource Log;
-
+    private Harmony harmony = new(Id);
+    
+    public ConfigData? ProfileData { get; set; }
+    
     public NeedleArtManager NeedleArtManager { get; private set; }
 
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
@@ -38,6 +48,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         NeedleArtManager = new NeedleArtManager();
         NeedleArtManager.Instance = NeedleArtManager;
         
+        Instance = this;
         Log = Logger;
         
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
@@ -46,13 +57,17 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         InitializeConfig();
         
         InitializeNeedleArtTools();
-        InitializeCrest();
     }
 
     private void OnDestroy() {
         NeedleArtManager.Instance = null;
     }
-    
+
+    private void Start() {
+        ProfileData ??= new ConfigData();
+
+        SimpleUnlock.Value = ProfileData.SimpleUnlock;
+    }    
     private static void InitializeNeedleArtTools() {
         var manager = NeedleArtManager.Instance;
         
@@ -74,17 +89,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         );
 
         SimpleUnlock.SettingChanged += (_, _) => {
-            if (PlayerData.instance == null) return;
-            
-            if (SimpleUnlock.Value) {
-                foreach (var crestArt in NeedleArtManager.GetAllNeedleArts().OfType<CrestArt>()) {
-                    crestArt.AddSimpleUnlockTest();
-                }
-            } else {
-                foreach (var crestArt in NeedleArtManager.GetAllNeedleArts().OfType<CrestArt>()) {
-                    crestArt.RemoveSimpleUnlockTest();
-                }
-            }
+            ProfileData.SimpleUnlock = SimpleUnlock.Value;
         };
         
         UnlockNeedleArts = Config.Bind(
@@ -108,28 +113,5 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
                 UnlockNeedleArts.Value = false;
             }
         };
-    }
-
-    private static void InitializeCrest() {
-        var crest = NeedleforgePlugin.AddCrest($"DuelistCrest_{Id}",
-            new LocalisedString { Key = "DuelistCrest_Name", Sheet = $"Mods.{Id}"},
-            new LocalisedString { Key = "DuelistCrest_Desc", Sheet = $"Mods.{Id}"}
-        );
-        
-        crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Neutral, new Vector2(0.0f, -0.61f), false);
-        crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Up, new Vector2(0.0f, 1.16f), false);
-        crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Down, new Vector2(0.0f, -2.52f), false);
-        crest.ApplyAutoSlotNavigation();
-
-        var heroConfig = ScriptableObject.CreateInstance<HeroConfigNeedleforge>();
-        crest.Moveset.HeroConfig = heroConfig;
-
-        heroConfig.canBind = true;
-        heroConfig.SetCanUseAbilities(true);
-        
-        heroConfig.SetAttackFields(
-            time: 1.0f, recovery: 0.15f, cooldown: 0.41f,
-            quickSpeedMult: 1.5f, quickCooldown: 0.205f
-        );
     }
 }
