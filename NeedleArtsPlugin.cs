@@ -12,12 +12,9 @@ using Needleforge.Data;
 using Silksong.DataManager;
 using TeamCherry.Localization;
 using UnityEngine;
+using PlayerDataExtension = NeedleArts.Data.PlayerDataExtension;
 
 namespace NeedleArts;
-
-public class ConfigData : PlayerDataExt {
-    public bool SimpleUnlock = false;
-}
 
 [BepInAutoPlugin(id: "io.github.jadedbay.needlearts")]
 [BepInDependency("org.silksong-modding.i18n")]
@@ -43,6 +40,8 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin, IProfileDataMod<ConfigD
     
     public static ConfigEntry<bool> UnlockNeedleArts;
     // ----------------
+
+    public static PlayerDataExtension PlayerDataExt;
     
     private void Awake() {
         NeedleArtManager = new NeedleArtManager();
@@ -64,10 +63,15 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin, IProfileDataMod<ConfigD
     }
 
     private void Start() {
-        ProfileData ??= new ConfigData();
+        ProfileData ??= new();
 
         SimpleUnlock.Value = ProfileData.SimpleUnlock;
-    }    
+
+        PlayerDataExt = new PlayerDataExtension(
+            ProfileData
+        );
+    }
+    
     private static void InitializeNeedleArtTools() {
         var manager = NeedleArtManager.Instance;
         
