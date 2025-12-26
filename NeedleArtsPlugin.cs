@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using NeedleArts.ArtTools;
+using NeedleArts.Managers;
 using Needleforge;
 using Needleforge.Data;
 using TeamCherry.Localization;
@@ -18,9 +19,9 @@ namespace NeedleArts;
 public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony = new(Id);
     internal static ManualLogSource Log;
-    
-    public static List<NeedleArt> NeedleArts = [];
-    
+
+    public NeedleArtManager NeedleArtManager { get; private set; }
+
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
         new Color(0.966f, 0.6f, 0.29f),
@@ -34,6 +35,9 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     // ----------------
     
     private void Awake() {
+        NeedleArtManager = new NeedleArtManager();
+        NeedleArtManager.Instance = NeedleArtManager;
+        
         Log = Logger;
         
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
@@ -44,58 +48,21 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         InitializeNeedleArtTools();
         InitializeCrest();
     }
+
+    private void OnDestroy() {
+        NeedleArtManager.Instance = null;
+    }
     
     private static void InitializeNeedleArtTools() {
-        AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, null));
-        AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2, "completedMemory_reaper"));
-        AddNeedleArt(new CrestArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4, "completedMemory_wanderer"));
-        AddNeedleArt(new CrestArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3, "completedMemory_beast"));
-        AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6, "completedMemory_witch"));
-        AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5, "completedMemory_toolmaster"));
-        AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, "completedMemory_shaman"));
-    }
-    
-    public static void AddNeedleArt(NeedleArt needleArt) {
-        NeedleArts.Add(needleArt); 
+        var manager = NeedleArtManager.Instance;
         
-        var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{needleArt.Name}Icon.png");
-        var sprite = Sprite.Create(
-            texture, 
-            new Rect(0, 0, texture.width, texture.height), 
-            new Vector2(0.5f, 0.5f), 
-            260f
-        );
-        
-        var tool = NeedleforgePlugin.AddTool(
-            needleArt.Name,
-            NeedleArtsToolType.Type,
-            new LocalisedString { Key = $"{needleArt.Name}_Tool", Sheet = $"Mods.{Id}" },
-            new LocalisedString { Key = $"{needleArt.Name}_ToolDesc", Sheet = $"Mods.{Id}" },
-            sprite
-        );
-
-        tool.UnlockedAtStart = false;
-    }
-
-    public static NeedleArt? GetNeedleArtByName(string name) {
-        return NeedleArts.FirstOrDefault(art => art.Name == name);
-    }
-
-    public static NeedleArt? GetSelectedNeedleArt() {
-        var inputHandler = HeroController.instance.inputHandler;
-        
-        var toolItem =
-            ToolItemManager.GetBoundAttackTool(AttackToolBinding.Neutral, ToolEquippedReadSource.Active);
-        
-        if (inputHandler.inputActions.Up.IsPressed) {
-            var dirToolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Up, ToolEquippedReadSource.Active);
-            if (dirToolItem != null) toolItem = dirToolItem;
-        } else if (inputHandler.inputActions.Down.IsPressed) {
-            var dirToolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Down, ToolEquippedReadSource.Active);
-            if (dirToolItem != null) toolItem = dirToolItem;
-        }
-        
-        return GetNeedleArtByName(toolItem.name);
+        manager.AddNeedleArt(new CrestArt("HunterArt", "FINISHED", "Antic", "Hunter_Anim", 0, null));
+        manager.AddNeedleArt(new CrestArt("ReaperArt", "REAPER", "Antic Rpr", "Reaper_Anim", 2, "completedMemory_reaper"));
+        manager.AddNeedleArt(new CrestArt("WandererArt", "WANDERER", "Wanderer Antic", "Wanderer_Anim", 4, "completedMemory_wanderer"));
+        manager.AddNeedleArt(new CrestArt("BeastArt", "WARRIOR", "Warrior Antic", "Warrior_Anim", 3, "completedMemory_beast"));
+        manager.AddNeedleArt(new CrestArt("WitchArt", "WITCH", "Antic", "Whip_Anim", 6, "completedMemory_witch"));
+        manager.AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5, "completedMemory_toolmaster"));
+        manager.AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, "completedMemory_shaman"));
     }
     
     private void InitializeConfig() {
@@ -110,11 +77,11 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             if (PlayerData.instance == null) return;
             
             if (SimpleUnlock.Value) {
-                foreach (var crestArt in NeedleArts.OfType<CrestArt>()) {
+                foreach (var crestArt in NeedleArtManager.GetAllNeedleArts().OfType<CrestArt>()) {
                     crestArt.AddSimpleUnlockTest();
                 }
             } else {
-                foreach (var crestArt in NeedleArts.OfType<CrestArt>()) {
+                foreach (var crestArt in NeedleArtManager.GetAllNeedleArts().OfType<CrestArt>()) {
                     crestArt.RemoveSimpleUnlockTest();
                 }
             }
@@ -131,9 +98,9 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             if (UnlockNeedleArts.Value) {
                 if (PlayerData.instance is { } data) {
                     data.hasChargeSlash = true;
-                    ToolItemManagerUtil.AutoEquip("Hunter", GetNeedleArtByName("HunterArt").ToolItem);
+                    ToolItemManagerUtil.AutoEquip("Hunter", NeedleArtManager.GetNeedleArtByName("HunterArt").ToolItem);
                     
-                    foreach (var needleArt in NeedleArts) {
+                    foreach (var needleArt in NeedleArtManager.GetAllNeedleArts()) {
                         needleArt.ToolItem.Unlock();
                     }
                 }

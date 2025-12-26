@@ -2,6 +2,7 @@ using System.Linq;
 using HarmonyLib;
 using HutongGames.PlayMaker;
 using NeedleArts.Actions;
+using NeedleArts.Managers;
 using Silksong.FsmUtil;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ internal class UnlockArt {
             if (!PlayerData.instance.hasChargeSlash) return;
             
             if (__instance.Crest.GetSlots().All(slot => !slot.IsLocked)) {
-                NeedleArtsPlugin.GetNeedleArtByName(CrestArtUtil.GetArtName(__instance.Crest.name)).ToolItem.Unlock();
+                NeedleArtManager.Instance.GetNeedleArtByName(CrestArtUtil.GetArtName(__instance.Crest.name))?.ToolItem.Unlock();
             }
         }
     }
@@ -46,7 +47,7 @@ internal class UnlockArt {
     [HarmonyPostfix]
     private static void AutoEquipOnUnlock(ToolCrest crest) {
         if (CrestArtUtil.GetArtName(crest.name) is { } artName) {
-            ToolItemManager.AutoEquip(NeedleArtsPlugin.GetNeedleArtByName(artName).ToolItem);
+            ToolItemManager.AutoEquip(NeedleArtManager.Instance.GetNeedleArtByName(artName).ToolItem);
         }
     }
     
@@ -54,7 +55,7 @@ internal class UnlockArt {
     [HarmonyPostfix]
     private static void AutoEquip(InventoryItemToolManager __instance, InventoryToolCrestSlot slot) {
         if (slot.Type == NeedleArtsPlugin.NeedleArtsToolType.Type) {
-            var artTool = NeedleArtsPlugin.GetNeedleArtByName(CrestArtUtil.GetArtName(PlayerData.instance.CurrentCrestID));
+            var artTool = NeedleArtManager.Instance.GetNeedleArtByName(CrestArtUtil.GetArtName(PlayerData.instance.CurrentCrestID));
             __instance.TryPickupOrPlaceTool(artTool.ToolItem);
         }
     }

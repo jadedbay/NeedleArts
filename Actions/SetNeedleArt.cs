@@ -1,11 +1,12 @@
 using HutongGames.PlayMaker;
+using NeedleArts.Managers;
 using Silksong.FsmUtil;
 
 namespace NeedleArts.Actions;
 
 public class SetNeedleArt : FsmStateAction {
     public override void OnEnter() {
-        var needleArt = NeedleArtsPlugin.GetSelectedNeedleArt();
+        var needleArt = NeedleArtManager.Instance.GetActiveNeedleArt();
         fsm.GetStringVariable("NeedleArtName").Value = needleArt.Name;
         fsm.GetStringVariable("ClipName").Value = needleArt.AnimName;
         

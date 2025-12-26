@@ -2,6 +2,7 @@ using System.Linq;
 using HarmonyLib;
 using HutongGames.PlayMaker.Actions;
 using NeedleArts.Actions;
+using NeedleArts.Managers;
 using Silksong.FsmUtil;
 using UnityEngine;
 
@@ -14,40 +15,40 @@ internal class PatchChargedSlash {
    private static void PatchGetGameObject(GetHeroAttackObject __instance, ref GameObject __result) {
       if ((GetHeroAttackObject.AttackObjects)__instance.Attack.Value != GetHeroAttackObject.AttackObjects.ChargeSlash) return;
       
-      if (NeedleArtsPlugin.GetSelectedNeedleArt() is { } artEquipped) {
-         __result = artEquipped.GetChargeSlash();
+      if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
+         __result = activeNeedleArt.GetChargeSlash();
       } 
    }
 
    [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashRecoils), MethodType.Getter)]
    [HarmonyPostfix]
    private static void PatchChargeSlashRecoils(ref bool __result) {
-      if (NeedleArtsPlugin.GetSelectedNeedleArt() is { } artEquipped) {
-         __result = artEquipped.GetConfig().chargeSlashRecoils;
+      if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
+         __result = activeNeedleArt.GetConfig().chargeSlashRecoils;
       } 
    }
    
    [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashChain), MethodType.Getter)]
    [HarmonyPostfix]
    private static void PatchChargeSlashChain(ref int __result) {
-      if (NeedleArtsPlugin.GetSelectedNeedleArt() is { } artEquipped) {
-         __result = artEquipped.GetConfig().chargeSlashChain;
+      if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
+         __result = activeNeedleArt.GetConfig().chargeSlashChain;
       } 
    } 
    
    [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashLungeSpeed), MethodType.Getter)]
    [HarmonyPostfix]
    private static void PatchChargeSlashLungeSpeed(ref float __result) {
-      if (NeedleArtsPlugin.GetSelectedNeedleArt() is { } artEquipped) {
-         __result = artEquipped.GetConfig().chargeSlashLungeSpeed;
+      if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
+         __result = activeNeedleArt.GetConfig().chargeSlashLungeSpeed;
       } 
    }
    
    [HarmonyPatch(typeof(HeroControllerConfig), nameof(HeroControllerConfig.ChargeSlashLungeDeceleration), MethodType.Getter)]
    [HarmonyPostfix]
    private static void PatchChargeSlashLungeDeceleration(ref float __result) {
-      if (NeedleArtsPlugin.GetSelectedNeedleArt() is { } artEquipped) {
-         __result = artEquipped.GetConfig().chargeSlashLungeDeceleration;
+      if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
+         __result = activeNeedleArt.GetConfig().chargeSlashLungeDeceleration;
       } 
    }
    
@@ -68,7 +69,7 @@ internal class PatchChargedSlash {
          .Where(action => action.GetType() != typeof(CheckIfCrestEquipped))
          .ToArray();
       
-      foreach (var needleArt in NeedleArtsPlugin.NeedleArts) {
+      foreach (var needleArt in NeedleArtManager.Instance.GetAllNeedleArts()) {
          needleArt.EditFsm(__instance);
       }
    }
