@@ -43,20 +43,37 @@ public class NeedleArtManager {
         return NeedleArts.FirstOrDefault(art => art.Name == name);
     }
 
-    public NeedleArt SetActiveNeedleArt() {
+    public void SetActiveNeedleArt() {
         var inputHandler = HeroController.instance.inputHandler;
-        
-        var toolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Neutral, ToolEquippedReadSource.Active);
-        if (inputHandler.inputActions.Up.IsPressed) {
-            var dirToolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Up, ToolEquippedReadSource.Active);
-            if (dirToolItem != null) toolItem = dirToolItem;
-        } else if (inputHandler.inputActions.Down.IsPressed) {
-            var dirToolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Down, ToolEquippedReadSource.Active);
-            if (dirToolItem != null) toolItem = dirToolItem;
+
+        var slots = ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID).Slots;
+        var slotData = PlayerData.instance.ToolEquips.GetData(PlayerData.instance.CurrentCrestID).Slots;
+
+        NeedleArt? needleArt = null;
+        for (int i = 0; i < slots.Length; i++) {
+            if (slots[i].Type != NeedleArtsPlugin.NeedleArtsToolType.Type) continue;
+
+            switch (slots[i].AttackBinding) {
+                case AttackToolBinding.Up: {
+                    if (inputHandler.inputActions.Up.IsPressed)
+                        needleArt ??= GetNeedleArtByName(slotData[i].EquippedTool);
+                    break;
+                }
+                case AttackToolBinding.Down: {
+                    if (inputHandler.inputActions.Down.IsPressed)
+                        needleArt ??= GetNeedleArtByName(slotData[i].EquippedTool);
+                    break;
+                }
+                case AttackToolBinding.Neutral:
+                default:
+                    needleArt ??= GetNeedleArtByName(slotData[i].EquippedTool);
+                    break;
+            }
+
+            if (needleArt != null) break;
         }
 
-        _activeNeedleArt = GetNeedleArtByName(toolItem.name);
-        return _activeNeedleArt;
+        _activeNeedleArt = needleArt;
     }
 
     public NeedleArt? GetActiveNeedleArt() {

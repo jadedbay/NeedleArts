@@ -1,6 +1,7 @@
 using HarmonyLib;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using Mono.WebBrowser;
 using NeedleArts.Managers;
 using Silksong.FsmUtil;
 using Silksong.FsmUtil.Actions;
@@ -61,13 +62,15 @@ internal class PatchChargedSlash {
       __instance.AddStringVariable("ClipName");
       
       var getChargeSlash = __instance.GetState("Get Charge Slash");
-      getChargeSlash.InsertAction(0, new DelegateAction<(NamedVariable needleArtName, NamedVariable clipName)> {
+      getChargeSlash.InsertAction(0, new DelegateAction<(NamedVariable needleArtName, NamedVariable clipName, NeedleArtManager manager)> {
          Arg = (
             __instance.GetStringVariable("NeedleArtName"),
-            __instance.GetStringVariable("ClipName")
+            __instance.GetStringVariable("ClipName"),
+            NeedleArtManager.Instance
          ),
          Method = args => {
-            var needleArt = NeedleArtManager.Instance.SetActiveNeedleArt();
+            args.manager.SetActiveNeedleArt();
+            var needleArt = args.manager.GetActiveNeedleArt();
             args.needleArtName.RawValue = needleArt.Name;
             args.clipName.RawValue = needleArt.AnimName;
          }
