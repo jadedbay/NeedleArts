@@ -111,15 +111,25 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
 
     private static void InitializeCrest() {
-        var crest = NeedleforgePlugin.AddCrest($"PinmasterCrest_{Id}",
-            new LocalisedString { Key = "PinmasterCrest_Name", Sheet = $"Mods.{Id}"},
-            new LocalisedString { Key = "PinmasterCrest_Desc", Sheet = $"Mods.{Id}"}
+        var crest = NeedleforgePlugin.AddCrest($"DuelistCrest_{Id}",
+            new LocalisedString { Key = "DuelistCrest_Name", Sheet = $"Mods.{Id}"},
+            new LocalisedString { Key = "DuelistCrest_Desc", Sheet = $"Mods.{Id}"}
         );
         
         crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Neutral, new Vector2(0.0f, -0.61f), false);
         crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Up, new Vector2(0.0f, 1.16f), false);
         crest.AddToolSlot(NeedleArtsToolType.Type, AttackToolBinding.Down, new Vector2(0.0f, -2.52f), false);
-        
         crest.ApplyAutoSlotNavigation();
+
+        var heroConfig = ScriptableObject.CreateInstance<HeroConfigNeedleforge>();
+        crest.Moveset.HeroConfig = heroConfig;
+
+        heroConfig.canBind = true;
+        heroConfig.SetCanUseAbilities(true);
+        
+        heroConfig.SetAttackFields(
+            time: 1.0f, recovery: 0.15f, cooldown: 0.41f,
+            quickSpeedMult: 1.5f, quickCooldown: 0.205f
+        );
     }
 }
