@@ -4,6 +4,7 @@ using HutongGames.PlayMaker.Actions;
 using NeedleArts.Actions;
 using NeedleArts.Managers;
 using Silksong.FsmUtil;
+using Silksong.FsmUtil.Actions;
 using UnityEngine;
 
 namespace NeedleArts.Patches;
@@ -64,13 +65,20 @@ internal class PatchChargedSlash {
       getChargeSlash.InsertAction(0, new SetNeedleArt());
       
       var anticType = __instance.GetState("Antic Type");
-      
-      anticType.Actions = anticType.Actions
-         .Where(action => action.GetType() != typeof(CheckIfCrestEquipped))
-         .ToArray();
+      anticType.RemoveActionsOfType<CheckIfCrestEquipped>();
       
       foreach (var needleArt in NeedleArtManager.Instance.GetAllNeedleArts()) {
          needleArt.EditFsm(__instance);
       }
+
+      var regainPartialControl = __instance.GetState("Regain Full Control");
+      regainPartialControl.AddAction(new DelegateAction<NeedleArtManager> {
+         Arg = NeedleArtManager.Instance,
+         Method = manager => {
+            manager.ResetActiveNeedleArt();
+            NeedleArtsPlugin.Log.LogInfo("RESET");
+            NeedleArtsPlugin.Log.LogInfo(manager);
+         }
+      });
    }
 }

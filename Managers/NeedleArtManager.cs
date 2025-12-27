@@ -11,6 +11,8 @@ public class NeedleArtManager {
     public static NeedleArtManager Instance { get; internal set; }
     private readonly List<NeedleArt> NeedleArts = [];
 
+    private NeedleArt? _activeNeedleArt;
+
     public void AddNeedleArt(NeedleArt needleArt) {
         NeedleArts.Add(needleArt); 
         
@@ -41,8 +43,7 @@ public class NeedleArtManager {
         return NeedleArts.FirstOrDefault(art => art.Name == name);
     }
 
-    public NeedleArt? GetActiveNeedleArt() {
-        
+    public NeedleArt SetActiveNeedleArt() {
         var inputHandler = HeroController.instance.inputHandler;
         
         var toolItem = ToolItemManager.GetBoundAttackTool(AttackToolBinding.Neutral, ToolEquippedReadSource.Active);
@@ -54,6 +55,15 @@ public class NeedleArtManager {
             if (dirToolItem != null) toolItem = dirToolItem;
         }
 
-        return GetNeedleArtByName(toolItem.name);
+        _activeNeedleArt = GetNeedleArtByName(toolItem.name);
+        return _activeNeedleArt;
+    }
+
+    public NeedleArt? GetActiveNeedleArt() {
+        return _activeNeedleArt;
+    }
+
+    public void ResetActiveNeedleArt() {
+        _activeNeedleArt = null;
     }
 }
