@@ -28,8 +28,14 @@ internal class CopyAnims {
          artClips.Add(Util.CopyClip(clip, $"{config.Config.name}_Anim"));
          
          var beastClip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "NeedleArt Dash");
-         if (beastClip == null) continue;
-         artClips.Add(Util.CopyClip(beastClip, "NeedleArt Dash"));
+         if (beastClip != null) {
+            artClips.Add(Util.CopyClip(beastClip, "NeedleArt Dash"));
+         }
+         
+         var witchLoopClip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "Slash_Charged_Loop");
+         if (witchLoopClip != null) {
+            artClips.Add(Util.CopyClip(witchLoopClip, "Slash_Charged_Loop"));
+         }
       }
 
       animator.Library.clips = [

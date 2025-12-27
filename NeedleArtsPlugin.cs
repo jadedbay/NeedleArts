@@ -23,7 +23,8 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     
     public static readonly ColorData NeedleArtsToolType = NeedleforgePlugin.AddToolColor(
         "NeedleArts",
-        new Color(0.966f, 0.6f, 0.29f)
+        new Color(0.966f, 0.6f, 0.29f),
+        true
     );
    
     // -----Config-----
