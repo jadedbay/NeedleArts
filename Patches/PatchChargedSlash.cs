@@ -1,7 +1,6 @@
-using System.Linq;
 using HarmonyLib;
+using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
-using NeedleArts.Actions;
 using NeedleArts.Managers;
 using Silksong.FsmUtil;
 using Silksong.FsmUtil.Actions;
@@ -62,7 +61,17 @@ internal class PatchChargedSlash {
       __instance.AddStringVariable("ClipName");
       
       var getChargeSlash = __instance.GetState("Get Charge Slash");
-      getChargeSlash.InsertAction(0, new SetNeedleArt());
+      getChargeSlash.InsertAction(0, new DelegateAction<(NamedVariable needleArtName, NamedVariable clipName)> {
+         Arg = (
+            __instance.GetStringVariable("NeedleArtName"),
+            __instance.GetStringVariable("ClipName")
+         ),
+         Method = args => {
+            var needleArt = NeedleArtManager.Instance.SetActiveNeedleArt();
+            args.needleArtName.RawValue = needleArt.Name;
+            args.clipName.RawValue = needleArt.AnimName;
+         }
+      });
       
       var anticType = __instance.GetState("Antic Type");
       anticType.RemoveActionsOfType<CheckIfCrestEquipped>();

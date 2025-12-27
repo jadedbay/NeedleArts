@@ -1,9 +1,8 @@
 using System.Linq;
 using HarmonyLib;
-using HutongGames.PlayMaker;
-using NeedleArts.Actions;
 using NeedleArts.Managers;
 using Silksong.FsmUtil;
+using Silksong.FsmUtil.Actions;
 using UnityEngine;
 
 namespace NeedleArts.Patches;
@@ -33,13 +32,19 @@ internal class UnlockArt {
     private static void UnlockAtPinstress(PlayMakerFSM __instance) {
         if (__instance is not { name: "Pinstress Interior Ground Sit", FsmName: "Behaviour" }) return;
         
-        __instance.GetState("Save").InsertAction(4, 
-            new UnlockNeedleArts {
-                manager = new FsmGameObject(Resources
-                    .FindObjectsOfTypeAll<InventoryItemToolManager>()
-                    .FirstOrDefault(m => m.gameObject.scene.IsValid()).gameObject)
+        __instance.GetState("Save").InsertAction(4, new DelegateAction<InventoryItemToolManager> {
+            Arg = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>().FirstOrDefault(m => m.gameObject.scene.IsValid()),
+            Method = manager => {
+                ToolItemManagerUtil.AutoEquip("Hunter", NeedleArtManager.Instance.GetNeedleArtByName("HunterArt").ToolItem);
+       
+                // Unlock art if all crest slots unlocked
+                foreach (var crest in manager.GetComponent<InventoryItemToolManager>().crestList.crests) {
+                    if (crest.GetSlots().All(slot => !slot.IsLocked)) {
+                        NeedleArtManager.Instance.GetNeedleArtByName(CrestArtUtil.GetArtName(crest.name)).ToolItem.Unlock();
+                    }
+                }
             }
-        );
+        });
     }
     
     [HarmonyPatch(typeof(ToolItemManager), nameof(ToolItemManager.AutoEquip), 
