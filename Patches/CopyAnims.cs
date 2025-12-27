@@ -30,6 +30,10 @@ internal class CopyAnims {
          var beastClip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "NeedleArt Dash");
          if (beastClip == null) continue;
          artClips.Add(Util.CopyClip(beastClip, "NeedleArt Dash"));
+         
+         var witchLoopClip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "Slash_Charged_Loop");
+         if (witchLoopClip == null) continue;
+         artClips.Add(Util.CopyClip(beastClip, "Slash_Charged_Loop"));
       }
 
       animator.Library.clips = [

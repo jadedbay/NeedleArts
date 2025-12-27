@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -10,7 +8,6 @@ using NeedleArts.Managers;
 using Needleforge;
 using Needleforge.Data;
 using Silksong.DataManager;
-using TeamCherry.Localization;
 using UnityEngine;
 using PlayerDataExtension = NeedleArts.Data.PlayerDataExtension;
 
@@ -21,7 +18,6 @@ namespace NeedleArts;
 [BepInDependency("org.silksong-modding.fsmutil")]
 [BepInDependency("org.silksong-modding.datamanager")]
 public partial class NeedleArtsPlugin : BaseUnityPlugin, IProfileDataMod<ConfigData> {
-    internal static NeedleArtsPlugin Instance { get; private set; }
     internal static ManualLogSource Log;
     private Harmony harmony = new(Id);
     
@@ -47,7 +43,6 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin, IProfileDataMod<ConfigD
         NeedleArtManager = new NeedleArtManager();
         NeedleArtManager.Instance = NeedleArtManager;
         
-        Instance = this;
         Log = Logger;
         
         Logger.LogInfo($"Plugin {Name} ({Id}) has loaded!");
