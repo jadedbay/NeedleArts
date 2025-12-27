@@ -1,7 +1,8 @@
 using System.Linq;
 using HarmonyLib;
-using NeedleArts.Actions;
+using NeedleArts.Managers;
 using Silksong.FsmUtil;
+using Silksong.FsmUtil.Actions;
 using UnityEngine;
 
 namespace NeedleArts.Patches;
@@ -21,7 +22,7 @@ internal class UnlockArt {
             if (!PlayerData.instance.hasChargeSlash) return;
             
             if (__instance.Crest.GetSlots().All(slot => !slot.IsLocked)) {
-                NeedleArtsPlugin.GetNeedleArtByName(CrestArtUtil.GetArtName(__instance.Crest.name)).ToolItem.Unlock();
+                NeedleArtManager.Instance.GetNeedleArtByName(CrestArtUtil.GetArtName(__instance.Crest.name))?.ToolItem.Unlock();
             }
         }
     }
@@ -31,11 +32,19 @@ internal class UnlockArt {
     private static void UnlockAtPinstress(PlayMakerFSM __instance) {
         if (__instance is not { name: "Pinstress Interior Ground Sit", FsmName: "Behaviour" }) return;
         
-        __instance.GetState("Save").AddActionAtIndex(new UnlockNeedleArts {
-            manager = new(Resources
-                .FindObjectsOfTypeAll<InventoryItemToolManager>()
-                .FirstOrDefault(m => m.gameObject.scene.IsValid()).gameObject)
-        }, 4);
+        __instance.GetState("Save").InsertAction(4, new DelegateAction<InventoryItemToolManager> {
+            Arg = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>().FirstOrDefault(m => m.gameObject.scene.IsValid()),
+            Method = manager => {
+                ToolItemManagerUtil.AutoEquip("Hunter", NeedleArtManager.Instance.GetNeedleArtByName("HunterArt").ToolItem);
+       
+                // Unlock art if all crest slots unlocked
+                foreach (var crest in manager.GetComponent<InventoryItemToolManager>().crestList.crests) {
+                    if (crest.GetSlots().All(slot => !slot.IsLocked)) {
+                        NeedleArtManager.Instance.GetNeedleArtByName(CrestArtUtil.GetArtName(crest.name)).ToolItem.Unlock();
+                    }
+                }
+            }
+        });
     }
     
     [HarmonyPatch(typeof(ToolItemManager), nameof(ToolItemManager.AutoEquip), 
@@ -43,7 +52,7 @@ internal class UnlockArt {
     [HarmonyPostfix]
     private static void AutoEquipOnUnlock(ToolCrest crest) {
         if (CrestArtUtil.GetArtName(crest.name) is { } artName) {
-            ToolItemManager.AutoEquip(NeedleArtsPlugin.GetNeedleArtByName(artName).ToolItem);
+            ToolItemManager.AutoEquip(NeedleArtManager.Instance.GetNeedleArtByName(artName).ToolItem);
         }
     }
     
