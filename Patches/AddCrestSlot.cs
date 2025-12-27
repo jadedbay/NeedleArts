@@ -33,6 +33,7 @@ internal class AddCrestSlot {
                 NavLeftIndex = -1,
                 NavRightIndex = -1,
                 Type = NeedleArtsPlugin.NeedleArtsToolType.Type,
+                AttackBinding = AttackToolBinding.Neutral,
             };
 
             crest.slots = [..crest.Slots, slot];
