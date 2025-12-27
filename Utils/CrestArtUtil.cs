@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using NeedleArts.ArtTools;
+using NeedleArts.Managers;
 
 namespace NeedleArts;
 
@@ -25,12 +27,8 @@ public static class CrestArtUtil {
     public static string GetCrestName(string artName) {
         return ArtToCrest.TryGetValue(artName, out var crest) ? crest : null;
     }
-    
-    public static IEnumerable<(string CrestName, string ArtName)> GetAllPairs() {
-        return CrestToArt.Select(kvp => (kvp.Key, kvp.Value));
-    }
 
-    public static bool IsValidVanillaCrest(string crestName) {
-        return GetArtName(crestName) != null ? true : false;
+    public static NeedleArt GetCrestArt() {
+        return NeedleArtManager.Instance.GetNeedleArtByName(GetArtName(PlayerData.instance.CurrentCrestID));
     }
 }
