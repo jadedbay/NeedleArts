@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using HarmonyLib;
+using Mono.WebBrowser;
 using NeedleArts.Utils;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ internal class AddCrestSlot {
                 NavLeftFallbackIndex = -1,
                 NavRightFallbackIndex = -1,
                 NavUpIndex = minIndex,
-                NavDownIndex = crest.Slots.Length,
+                NavDownIndex = -1,
                 NavLeftIndex = -1,
                 NavRightIndex = -1,
                 Type = NeedleArtsPlugin.NeedleArtsToolType.Type,
@@ -43,21 +44,6 @@ internal class AddCrestSlot {
         _hasAddedSlots = true;
     }
     
-    [HarmonyPatch(typeof(InventoryItemSelectableDirectional), nameof(InventoryItemSelectableDirectional.GetNextSelectable), typeof(InventoryItemManager.SelectionDirection))]
-    [HarmonyPrefix]
-    private static void FixChangeCrestNav(
-        ref InventoryItemManager.SelectionDirection direction,
-        InventoryItemSelectableDirectional __instance
-    ) {
-        if (__instance.name != "Change Crest Button") return;
-    
-        direction = direction switch {
-            InventoryItemManager.SelectionDirection.Up => InventoryItemManager.SelectionDirection.Left,
-            InventoryItemManager.SelectionDirection.Right => InventoryItemManager.SelectionDirection.Up,
-            _ => direction
-        };
-    }
-
     [HarmonyPatch(typeof(InventoryToolCrestSlot), nameof(InventoryToolCrestSlot.OnEnable))]
     [HarmonyPostfix]
     private static void DisableNeedleArtSlot(InventoryToolCrestSlot __instance) {
