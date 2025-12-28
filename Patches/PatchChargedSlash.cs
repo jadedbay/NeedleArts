@@ -76,13 +76,20 @@ internal class PatchChargedSlash {
          }
       });
       
-      var anticType = __instance.GetState("Antic Type");
-      anticType.RemoveActionsOfType<CheckIfCrestEquipped>();
+      __instance.GetState("Antic Type").RemoveActionsOfType<CheckIfCrestEquipped>();
       
       foreach (var needleArt in NeedleArtManager.Instance.GetAllNeedleArts()) {
          needleArt.EditFsm(__instance);
       }
-
+      
+      __instance.GetState("Slash Recoil?").ReplaceAction(0, 
+         new StringCompare {
+            stringVariable = __instance.GetStringVariable("NeedleArtName"),
+            compareTo = "ShamanArt",
+            notEqualEvent = FsmEvent.Finished,
+         }
+      );
+      
       var regainPartialControl = __instance.GetState("Regain Full Control");
       regainPartialControl.AddAction(new DelegateAction<NeedleArtManager> {
          Arg = NeedleArtManager.Instance,
