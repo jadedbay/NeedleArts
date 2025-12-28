@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.1.4
+- Fixed bug where navigating crest slots with a selected tool would crash the game
+
 ## v0.1.3
 - Fixed ShamanArt recoil not working
 
