@@ -1,4 +1,3 @@
-using HarmonyLib;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using Silksong.FsmUtil;
@@ -22,9 +21,7 @@ public class CrestArt(string name, string eventName, string anticName, string an
     }
 
     public override void EditFsm(PlayMakerFSM fsm) {
-        var anticType = fsm.GetState("Antic Type");
-        
-        anticType.AddAction(new StringCompare {
+        fsm.GetState("Antic Type").AddAction(new StringCompare {
             stringVariable = fsm.GetStringVariable("NeedleArtName"),
             compareTo = Name,
             equalEvent = FsmEvent.GetFsmEvent(EventName),

@@ -1,7 +1,6 @@
 using HarmonyLib;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
-using Mono.WebBrowser;
 using NeedleArts.Managers;
 using Silksong.FsmUtil;
 using Silksong.FsmUtil.Actions;
@@ -62,35 +61,41 @@ internal class PatchChargedSlash {
       __instance.AddStringVariable("ClipName");
       
       var getChargeSlash = __instance.GetState("Get Charge Slash");
-      getChargeSlash.InsertAction(0, new DelegateAction<(NamedVariable needleArtName, NamedVariable clipName, NeedleArtManager manager)> {
-         Arg = (
-            __instance.GetStringVariable("NeedleArtName"),
-            __instance.GetStringVariable("ClipName"),
-            NeedleArtManager.Instance
-         ),
-         Method = args => {
-            args.manager.SetActiveNeedleArt();
-            var needleArt = args.manager.GetActiveNeedleArt();
-            args.needleArtName.RawValue = needleArt.Name;
-            args.clipName.RawValue = needleArt.AnimName;
+      getChargeSlash.InsertAction(0, 
+         new DelegateAction<(NamedVariable needleArtName, NamedVariable clipName, NeedleArtManager manager)> {
+            Arg = (
+               __instance.GetStringVariable("NeedleArtName"),
+               __instance.GetStringVariable("ClipName"),
+               NeedleArtManager.Instance
+            ),
+            Method = args => {
+               args.manager.SetActiveNeedleArt();
+               var needleArt = args.manager.GetActiveNeedleArt();
+               args.needleArtName.RawValue = needleArt.Name;
+               args.clipName.RawValue = needleArt.AnimName;
+            }
          }
-      });
+      );
       
-      var anticType = __instance.GetState("Antic Type");
-      anticType.RemoveActionsOfType<CheckIfCrestEquipped>();
+      __instance.GetState("Antic Type").RemoveActionsOfType<CheckIfCrestEquipped>();
       
       foreach (var needleArt in NeedleArtManager.Instance.GetAllNeedleArts()) {
          needleArt.EditFsm(__instance);
       }
-
-      var regainPartialControl = __instance.GetState("Regain Full Control");
-      regainPartialControl.AddAction(new DelegateAction<NeedleArtManager> {
-         Arg = NeedleArtManager.Instance,
-         Method = manager => {
-            manager.ResetActiveNeedleArt();
-            NeedleArtsPlugin.Log.LogInfo("RESET");
-            NeedleArtsPlugin.Log.LogInfo(manager);
+      
+      __instance.GetState("Slash Recoil?").ReplaceAction(0, 
+         new StringCompare {
+            stringVariable = __instance.GetStringVariable("NeedleArtName"),
+            compareTo = "ShamanArt",
+            notEqualEvent = FsmEvent.Finished,
          }
-      });
+      );
+      
+      __instance.GetState("Regain Full Control").AddAction(
+         new DelegateAction<NeedleArtManager> {
+            Arg = NeedleArtManager.Instance,
+            Method = manager => manager.ResetActiveNeedleArt(),
+         }
+      );
    }
 }
