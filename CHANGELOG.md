@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.1.3
+- Fixed ShamanArt recoil not working
+
 ## v0.1.2
 - Fixed WitchArt chain not working
 - Internal refactor to support crests with multiple NeedleArt slots
