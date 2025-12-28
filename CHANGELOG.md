@@ -2,6 +2,7 @@
 
 ## v0.1.4
 - Fixed bug where navigating crest slots with a selected tool would crash the game
+- NeedleArt tools no longer count towards completion percentage
 
 ## v0.1.3
 - Fixed ShamanArt recoil not working
