@@ -3,7 +3,7 @@ using System.Linq;
 using NeedleArts.ArtTools;
 using NeedleArts.Managers;
 
-namespace NeedleArts;
+namespace NeedleArts.Utils;
 
 public static class CrestArtUtil {
     private static readonly Dictionary<string, string> CrestToArt = new() {

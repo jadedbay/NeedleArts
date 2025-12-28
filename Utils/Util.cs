@@ -2,7 +2,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-namespace NeedleArts;
+namespace NeedleArts.Utils;
 
 public static class Util {
     public static Texture2D LoadTextureFromAssembly(string resourceName) {
