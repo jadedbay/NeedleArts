@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace NeedleArts;
+namespace NeedleArts.Utils;
 
 public static class ToolItemManagerUtil {
     public static void AutoEquip(string crestName, ToolItem tool)
