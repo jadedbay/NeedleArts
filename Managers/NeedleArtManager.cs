@@ -27,7 +27,7 @@ public class NeedleArtManager {
         
         var tool = NeedleforgePlugin.AddTool(
             needleArt.Name,
-            NeedleArtsPlugin.NeedleArtsToolType.Type,
+            NeedleArtsPlugin.ToolType(),
             new LocalisedString { Key = $"{needleArt.Name}_Tool", Sheet = $"Mods.{NeedleArtsPlugin.Id}" },
             new LocalisedString { Key = $"{needleArt.Name}_ToolDesc", Sheet = $"Mods.{NeedleArtsPlugin.Id}" },
             sprite
@@ -47,34 +47,29 @@ public class NeedleArtManager {
     public void SetActiveNeedleArt() {
         var inputHandler = HeroController.instance.inputHandler;
 
-        var slots = ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID).Slots;
+        var slotInfo = ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID).Slots;
         var slotData = PlayerData.instance.ToolEquips.GetData(PlayerData.instance.CurrentCrestID).Slots;
+        var slots = slotInfo.Zip(slotData, (info, data) => (info, data))
+            .Where(slot => slot.info.Type == NeedleArtsPlugin.ToolType())
+            .ToList();
 
-        NeedleArt? needleArt = null;
-        for (int i = 0; i < slots.Length; i++) {
-            if (slots[i].Type != NeedleArtsPlugin.NeedleArtsToolType.Type) continue;
-
-            switch (slots[i].AttackBinding) {
-                case AttackToolBinding.Up: {
-                    if (inputHandler.inputActions.Up.IsPressed)
-                        needleArt ??= GetNeedleArtByName(slotData[i].EquippedTool);
-                    break;
-                }
-                case AttackToolBinding.Down: {
-                    if (inputHandler.inputActions.Down.IsPressed)
-                        needleArt ??= GetNeedleArtByName(slotData[i].EquippedTool);
-                    break;
-                }
-                case AttackToolBinding.Neutral:
-                default:
-                    needleArt ??= GetNeedleArtByName(slotData[i].EquippedTool);
-                    break;
-            }
-
-            if (needleArt != null) break;
-        }
-
-        _activeNeedleArt = needleArt;
+        // check up/down
+        _activeNeedleArt = slots
+            .Where(s =>
+                s.info.AttackBinding == AttackToolBinding.Up && inputHandler.inputActions.Up.IsPressed
+                || s.info.AttackBinding == AttackToolBinding.Down && inputHandler.inputActions.Down.IsPressed
+            ).Select(s => GetNeedleArtByName(s.data.EquippedTool))
+            .FirstOrDefault(art => art is not null) 
+           
+        // neutral
+           ?? GetNeedleArtByName(
+               slots.FirstOrDefault(s => s.info.AttackBinding == AttackToolBinding.Neutral)
+                   .data.EquippedTool)
+           
+        // fallback to any equipped
+           ?? slots
+               .Select(slot => GetNeedleArtByName(slot.data.EquippedTool))
+               .FirstOrDefault(art => art is not null);
     }
 
     public NeedleArt? GetActiveNeedleArt() {

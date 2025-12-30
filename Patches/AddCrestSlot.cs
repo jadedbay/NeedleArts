@@ -34,7 +34,7 @@ internal class AddCrestSlot {
                 NavDownIndex = -1,
                 NavLeftIndex = -1,
                 NavRightIndex = -1,
-                Type = NeedleArtsPlugin.NeedleArtsToolType.Type,
+                Type = NeedleArtsPlugin.ToolType(),
                 AttackBinding = AttackToolBinding.Neutral,
             };
 
@@ -47,7 +47,7 @@ internal class AddCrestSlot {
     [HarmonyPatch(typeof(InventoryToolCrestSlot), nameof(InventoryToolCrestSlot.OnEnable))]
     [HarmonyPostfix]
     private static void DisableNeedleArtSlot(InventoryToolCrestSlot __instance) {
-        if (__instance.Type == NeedleArtsPlugin.NeedleArtsToolType.Type && !PlayerData.instance.hasChargeSlash) {
+        if (__instance.Type == NeedleArtsPlugin.ToolType() && !PlayerData.instance.hasChargeSlash) {
             __instance.gameObject.SetActive(false);
         }
     }
@@ -55,7 +55,7 @@ internal class AddCrestSlot {
     [HarmonyPatch(typeof(InventoryItemToolManager), nameof(InventoryItemToolManager.Awake))]
     [HarmonyPostfix]
     private static void ChangeHeaderSprite(InventoryItemToolManager __instance) {
-        var header = __instance.listSectionHeaders[(int)NeedleArtsPlugin.NeedleArtsToolType.Type];
+        var header = __instance.listSectionHeaders[(int)NeedleArtsPlugin.ToolType()];
         
         var texture = Util.LoadTextureFromAssembly("NeedleArts.Resources.NeedleArtUIHeading.png");
         var sprite = Sprite.Create(

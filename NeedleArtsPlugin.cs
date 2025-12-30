@@ -62,6 +62,10 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         manager.AddNeedleArt(new CrestArt("ArchitectArt", "TOOLMASTER", "Antic Drill", "Toolmaster_Anim", 5, "completedMemory_toolmaster"));
         manager.AddNeedleArt(new CrestArt("ShamanArt", "SHAMAN", "Antic", "Shaman_Anim", 7, "completedMemory_shaman"));
     }
+
+    public static ToolItemType ToolType() {
+        return NeedleArtsToolType.Type;
+    }
     
     private void InitializeConfig() {
         SimpleUnlock = Config.Bind(

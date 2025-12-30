@@ -60,7 +60,7 @@ internal class UnlockArt {
     [HarmonyPatch(typeof(InventoryItemToolManager), nameof(InventoryItemToolManager.UnequipTool))]
     [HarmonyPostfix]
     private static void AutoEquip(InventoryItemToolManager __instance, InventoryToolCrestSlot slot) {
-        if (slot.Type != NeedleArtsPlugin.NeedleArtsToolType.Type) return;
+        if (slot.Type != NeedleArtsPlugin.ToolType()) return;
 
         var neutralSlot = ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID).Slots
             .Zip(slot.Crest.GetSlots(), (info, data) => (info, data))
