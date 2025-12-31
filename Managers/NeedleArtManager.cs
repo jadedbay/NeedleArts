@@ -49,10 +49,14 @@ public class NeedleArtManager {
 
         var slotInfo = ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID).Slots;
         var slotData = PlayerData.instance.ToolEquips.GetData(PlayerData.instance.CurrentCrestID).Slots;
+        var vestiSlot = PlayerData.instance.ExtraToolEquips.GetData("NeedleArtsSlot");
+
+        _activeNeedleArt = GetNeedleArtByName(vestiSlot.EquippedTool);
+        
         var slots = slotInfo.Zip(slotData, (info, data) => (info, data))
             .Where(slot => slot.info.Type == NeedleArtsPlugin.ToolType())
             .ToList();
-
+        
         // check up/down
         _activeNeedleArt = slots
             .Where(s =>
@@ -62,9 +66,7 @@ public class NeedleArtManager {
             .FirstOrDefault(art => art is not null) 
            
         // neutral
-           ?? GetNeedleArtByName(
-               slots.FirstOrDefault(s => s.info.AttackBinding == AttackToolBinding.Neutral)
-                   .data.EquippedTool)
+           ?? GetNeedleArtByName(vestiSlot.EquippedTool)
            
         // fallback to any equipped
            ?? slots

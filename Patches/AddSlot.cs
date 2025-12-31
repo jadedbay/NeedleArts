@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 
@@ -9,10 +10,13 @@ public class AddSlot {
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Awake))]
     [HarmonyPostfix]
     private static void SpawnSlot(InventoryFloatingToolSlots __instance) {
+        NeedleArtsPlugin.Log.LogInfo("AWAKE");
         var defendSlot = __instance.transform.Find("Defend Slot").gameObject;
         var artSlot = Object.Instantiate(defendSlot, __instance.transform);
         artSlot.name = "NeedleArt Slot";
-        artSlot.GetComponent<InventoryToolCrestSlot>().slotInfo.Type = NeedleArtsPlugin.ToolType();
+        artSlot.transform.position = new Vector3(-9.852f, -3.62f, 0.699f);
+        var artInfo = artSlot.GetComponent<InventoryToolCrestSlot>().slotInfo;
+        artInfo.Type = NeedleArtsPlugin.ToolType();
         artSlot.SetActive(false);
         
         var cursedSlot = __instance.transform.Find("Cursed Socket Top").gameObject;
@@ -57,7 +61,7 @@ public class AddSlot {
     
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Evaluate))]
     [HarmonyPostfix]
-    private static void FixAnimatorAfterEvaluate(InventoryFloatingToolSlots __instance) {
+    private static void SetAnimator(InventoryFloatingToolSlots __instance) {
         if (__instance.transform.Find("NeedleArt Slot") is not { } artSlot) return;
         if (__instance.transform.Find("Defend Slot") is not { } defendSlot) return;
         
@@ -65,6 +69,15 @@ public class AddSlot {
                 .GetComponent<Animator>().runtimeAnimatorController =
             defendSlot.Find("Background Group/Background")
                 .GetComponent<Animator>().runtimeAnimatorController;
+    }
+
+    [HarmonyPatch(typeof(InventoryItemGrid), nameof(InventoryItemGrid.PositionGridItems))]
+    [HarmonyPostfix]
+    private static void SetNeedleArtSlotPosition(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems) {
+        if (__instance.gameObject.name != "Floating Slots") return;
+        foreach (var slot in childItems.Where(slot => slot.name == "NeedleArt Slot")) {
+            slot.transform.SetLocalPosition2D(1.3483f, -3.45f);
+        }
     }
 }
 
