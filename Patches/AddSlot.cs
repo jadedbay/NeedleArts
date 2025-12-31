@@ -33,42 +33,58 @@ public class AddSlot {
         _bracket2 = Object.Instantiate(bracket, bracket.parent.parent);
         _bracket2.SetRotation2D(90f);
         _bracket2.gameObject.SetActive(false);
+
+        var configSlot = new InventoryFloatingToolSlots.Slot {
+            SlotObject = artSlot.GetComponent<InventoryToolCrestSlot>(),
+            Type = NeedleArtsPlugin.ToolType(),
+            Id = "NeedleArtsSlot",
+            CursedSlot = cursedArtSlot,
+        };
+
+        var test = new PlayerDataTest.Test {
+            FieldName = "hasChargeSlash",
+            Type = PlayerDataTest.TestType.Bool,
+            BoolValue = true
+        };
         
         var needleArtConfigs = new List<InventoryFloatingToolSlots.Config>();
         foreach (var config in __instance.configs) {
             var condition = new PlayerDataTest {
                 TestGroups = [
                     new PlayerDataTest.TestGroup {
-                        Tests = [..config.Condition.TestGroups[0].Tests, 
-                            new PlayerDataTest.Test {
-                                FieldName = "hasChargeSlash",
-                                Type = PlayerDataTest.TestType.Bool,
-                                BoolValue = true
-                            }
-                        ]
+                        Tests = [..config.Condition.TestGroups[0].Tests, test]
                     }
                 ]
              };
             
             needleArtConfigs.Add(new InventoryFloatingToolSlots.Config {
-                Slots = [..config.Slots, new InventoryFloatingToolSlots.Slot {
-                    SlotObject = artSlot.GetComponent<InventoryToolCrestSlot>(),
-                    Type = NeedleArtsPlugin.ToolType(),
-                    Id = "NeedleArtsSlot",
-                    CursedSlot = cursedArtSlot,
-                }],
+                Slots = [..config.Slots, configSlot],
                 Brackets = [..config.Brackets, _bracket1.gameObject, _bracket2.gameObject],
                 PositionOffset = config.PositionOffset,
                 Condition = condition,
             });
         }
 
-        __instance.configs = [..__instance.configs, ..needleArtConfigs];
+        var baseConfig = new InventoryFloatingToolSlots.Config {
+            Slots = [configSlot],
+            Brackets = [_bracket1.gameObject, _bracket2.gameObject],
+            PositionOffset = new Vector2(0.0f, 0.0f),
+            Condition = new PlayerDataTest {
+                TestGroups = [
+                    new PlayerDataTest.TestGroup {
+                        Tests = [test]
+                    }
+                ]
+            }
+        };
+
+        __instance.configs = [..__instance.configs, ..needleArtConfigs, baseConfig];
         
         var data = PlayerData.instance.ExtraToolEquips.GetData("NeedleArtsSlot");
         if (string.IsNullOrEmpty(data.EquippedTool)) {
             PlayerData.instance.ExtraToolEquips.SetData("NeedleArtsSlot", new ToolCrestsData.SlotData());
         }
+
     }
     
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Evaluate))]
