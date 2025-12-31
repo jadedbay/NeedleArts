@@ -8,6 +8,7 @@ using NeedleArts.Managers;
 using NeedleArts.Utils;
 using Needleforge;
 using Needleforge.Data;
+using TeamCherry.Localization;
 using UnityEngine;
 
 namespace NeedleArts;
@@ -15,6 +16,7 @@ namespace NeedleArts;
 [BepInAutoPlugin(id: "io.github.jadedbay.needlearts")]
 [BepInDependency("org.silksong-modding.i18n")]
 [BepInDependency("org.silksong-modding.fsmutil")]
+[BepInDependency("io.github.needleforge")]
 public partial class NeedleArtsPlugin : BaseUnityPlugin {
     private Harmony harmony = new(Id);
     internal static ManualLogSource Log;
@@ -111,4 +113,9 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             }
         };
     }
+}
+
+public class NeedleArtSlot : MonoBehaviour {
+    public InventoryToolCrestSlot SlotObject;
+    
 }
