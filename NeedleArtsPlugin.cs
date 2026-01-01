@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
@@ -102,7 +103,6 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             if (UnlockNeedleArts.Value) {
                 if (PlayerData.instance is { } data) {
                     data.hasChargeSlash = true;
-                    ToolItemManagerUtil.AutoEquip("Hunter", NeedleArtManager.GetNeedleArtByName("HunterArt").ToolItem);
                     
                     foreach (var needleArt in NeedleArtManager.GetAllNeedleArts()) {
                         needleArt.ToolItem.Unlock();

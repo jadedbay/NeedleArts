@@ -36,8 +36,6 @@ internal class UnlockArt {
         __instance.GetState("Save").InsertAction(4, new DelegateAction<InventoryItemToolManager> {
             Arg = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>().FirstOrDefault(m => m.gameObject.scene.IsValid()),
             Method = manager => {
-                ToolItemManagerUtil.AutoEquip("Hunter", NeedleArtManager.Instance.GetNeedleArtByName("HunterArt").ToolItem);
-       
                 // Unlock art if all crest slots unlocked
                 foreach (var crest in manager.GetComponent<InventoryItemToolManager>().crestList.crests) {
                     if (crest.GetSlots().All(slot => !slot.IsLocked)) {
@@ -54,7 +52,7 @@ internal class UnlockArt {
     private static void AutoEquipOnUnlock(ToolCrest crest) {
         if (!PlayerData.instance.hasChargeSlash) return;
         
-        AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
+        NeedleArtManager.AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
     }
    
     [HarmonyPatch(typeof(InventoryItemToolManager), nameof(InventoryItemToolManager.UnequipTool))]
@@ -62,16 +60,6 @@ internal class UnlockArt {
     private static void AutoEquip(InventoryItemToolManager __instance, InventoryToolCrestSlot slot) {
         if (slot.Type != NeedleArtsPlugin.ToolType()) return;
 
-        AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
-    }
-
-    private static void AutoEquipArt(ToolItem needleArt) {
-        var manager = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>()
-            .FirstOrDefault(m => m.gameObject.scene.IsValid());
-
-        foreach (var floatingSlot in manager.extraSlots.GetSlots()) {
-            if (floatingSlot.Type != NeedleArtsPlugin.ToolType()) continue;
-            floatingSlot.SetEquipped(needleArt, isManual: true, refreshTools: true);
-        }
+        NeedleArtManager.AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
     }
 }

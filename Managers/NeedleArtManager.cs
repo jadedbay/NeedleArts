@@ -81,4 +81,14 @@ public class NeedleArtManager {
     public void ResetActiveNeedleArt() {
         _activeNeedleArt = null;
     }
+    
+    public static void AutoEquipArt(ToolItem needleArt) {
+        var manager = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>()
+            .FirstOrDefault(m => m.gameObject.scene.IsValid());
+
+        foreach (var floatingSlot in manager.extraSlots.GetSlots()) {
+            if (floatingSlot.Type != NeedleArtsPlugin.ToolType()) continue;
+            floatingSlot.SetEquipped(needleArt, isManual: true, refreshTools: true);
+        }
+    }
 }

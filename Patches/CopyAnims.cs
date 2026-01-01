@@ -17,7 +17,7 @@ internal class CopyAnims {
       
       List<tk2dSpriteAnimationClip> artClips = [];
 
-      var animator = __instance.GetComponent<tk2dSpriteAnimator>();
+      var animator = __instance.AnimCtrl.animator;
       artClips.Add(Util.CopyClip(animator.Library.clips.FirstOrDefault(c => c.name == "Slash_Charged"), "Hunter_Anim"));
       
       foreach (var config in __instance.configs) {
