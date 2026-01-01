@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
@@ -103,8 +104,6 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
                 if (PlayerData.instance is { } data) {
                     data.hasChargeSlash = true;
                     
-                    Log.LogInfo(CrestArtUtil.GetCrestArt().ToolItem.name);
-                    NeedleArtManager.AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
                     foreach (var needleArt in NeedleArtManager.GetAllNeedleArts()) {
                         needleArt.ToolItem.Unlock();
                     }

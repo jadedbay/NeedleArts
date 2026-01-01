@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1
+- Fixed old autoequip logic being used
+- Fixed unlocking yellow Vesticrest slot automatically
+
 ## v0.2.0
 - Moved NeedleArt slot to a Vesticrest slot (you don't need the Vesticrest to see the slot)
 
