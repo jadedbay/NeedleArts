@@ -114,8 +114,3 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         };
     }
 }
-
-public class NeedleArtSlot : MonoBehaviour {
-    public InventoryToolCrestSlot SlotObject;
-    
-}
