@@ -102,8 +102,9 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
             if (UnlockNeedleArts.Value) {
                 if (PlayerData.instance is { } data) {
                     data.hasChargeSlash = true;
-                    ToolItemManagerUtil.AutoEquip("Hunter", NeedleArtManager.GetNeedleArtByName("HunterArt").ToolItem);
                     
+                    Log.LogInfo(CrestArtUtil.GetCrestArt().ToolItem.name);
+                    NeedleArtManager.AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
                     foreach (var needleArt in NeedleArtManager.GetAllNeedleArts()) {
                         needleArt.ToolItem.Unlock();
                     }

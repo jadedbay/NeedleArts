@@ -91,8 +91,6 @@ public class AddSlot {
         if (string.IsNullOrEmpty(data.EquippedTool)) {
             PlayerData.instance.ExtraToolEquips.SetData("NeedleArtsSlot", new ToolCrestsData.SlotData());
         }
-
-        PlayerData.instance.UnlockedExtraYellowSlot = true;
     }
     
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Evaluate))]
