@@ -25,7 +25,7 @@ Install via Thunderstore Mod Manager or install manually by:
 4. Extract the `.zip` file to your `BepInEx/plugins` folder.
 
 ## Bug Reporting
-If you find any bugs with the mod or compatibility issues with other mods. Feel free to report the issue on [GitHub](https://github.com/jadedbay/NeedleArts/issues) or send a message in the Hollow Knight Modding discord.
+If you find any bugs with the mod or compatibility issues with other mods. Feel free to report them on [GitHub](https://github.com/jadedbay/NeedleArts/issues) or send a message in the Hollow Knight Modding discord.
 
 ## Future Plans
 - Add custom Needle Arts

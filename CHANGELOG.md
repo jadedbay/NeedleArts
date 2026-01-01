@@ -1,8 +1,9 @@
 # Changelog
 
 ## v0.2.1
-- Fixed animations not working with Hunter crest when a new crest is added from Needleforge
+- Fixed animations not working with Hunter crest when a new crest is added with Needleforge
 - Fixed unlocking yellow Vesticrest slot automatically
+- Fixed cursed slot icon position
 - Removed old autoequip logic
 
 ## v0.2.0
