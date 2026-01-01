@@ -75,6 +75,8 @@ public class NeedleArtManager {
     }
 
     public NeedleArt? GetActiveNeedleArt() {
+        NeedleArtsPlugin.Log.LogInfo(_activeNeedleArt.Name);
+        
         return _activeNeedleArt;
     }
 

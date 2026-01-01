@@ -7,6 +7,10 @@ namespace NeedleArts.Patches;
 
 [HarmonyPatch]
 public class AddSlot {
+    private const float slotPosX = -10f;
+    private const float slotPosY = -3.62f;
+    private const float bracketOffset = 1.26f;
+
     private static Transform _bracket1;
     private static Transform _bracket2;
     
@@ -23,8 +27,11 @@ public class AddSlot {
         artSlot.GetComponent<InventoryToolCrestSlot>().slotInfo.Type = 
             NeedleArtsPlugin.ToolType();
         
-        var cursedSlot = __instance.transform.Find("Cursed Socket Top").gameObject;
-        var cursedArtSlot = Object.Instantiate(cursedSlot, __instance.transform);
+        var cursedArtSlot = Object.Instantiate(
+            __instance.transform.Find("Cursed Socket Top").gameObject,
+            __instance.transform
+        );
+        cursedArtSlot.transform.SetPosition2D(slotPosX, slotPosY);
         
         var bracket = __instance.transform.Find("Brackets/1 Slot Brackets/Bottom Bracket");
         _bracket1 = Object.Instantiate(bracket, bracket.parent.parent);
@@ -104,10 +111,10 @@ public class AddSlot {
     private static void SetNeedleArtSlotPosition(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems) {
         if (__instance.gameObject.name != "Floating Slots") return;
         foreach (var slot in childItems.Where(slot => slot.name == "NeedleArt Slot")) {
-            slot.transform.SetPosition2D(-10f, -3.62f);
+            slot.transform.SetPosition2D(slotPosX, slotPosY);
         }
-        _bracket1.SetPosition2D(-11.26f, -3.62f);
-        _bracket2.SetPosition2D(-8.74f, -3.62f);
+        _bracket1.SetPosition2D(slotPosX - bracketOffset, slotPosX);
+        _bracket2.SetPosition2D(slotPosY + bracketOffset, slotPosY);
     }
 }
 
