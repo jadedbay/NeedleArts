@@ -1,7 +1,7 @@
 # Changelog
 
 ## v0.2.0
-- Moved NeedleArt slot to a vesticrest slot (you don't need the vesticrest to see the slot)
+- Moved NeedleArt slot to a Vesticrest slot (you don't need the Vesticrest to see the slot)
 
 ## v0.1.4
 - Fixed bug where navigating crest slots with a selected tool would crash the game
