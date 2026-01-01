@@ -85,7 +85,7 @@ public class AddSlot {
             }
         };
 
-        __instance.configs = [..__instance.configs, ..needleArtConfigs, baseConfig];
+        __instance.configs = [baseConfig, ..__instance.configs, ..needleArtConfigs];
         
         var data = PlayerData.instance.ExtraToolEquips.GetData("NeedleArtsSlot");
         if (string.IsNullOrEmpty(data.EquippedTool)) {
@@ -113,8 +113,8 @@ public class AddSlot {
         foreach (var slot in childItems.Where(slot => slot.name == "NeedleArt Slot")) {
             slot.transform.SetPosition2D(slotPosX, slotPosY);
         }
-        _bracket1.SetPosition2D(slotPosX - bracketOffset, slotPosX);
-        _bracket2.SetPosition2D(slotPosY + bracketOffset, slotPosY);
+        _bracket1.SetPosition2D(slotPosX - bracketOffset, slotPosY);
+        _bracket2.SetPosition2D(slotPosX + bracketOffset, slotPosY);
     }
 }
 

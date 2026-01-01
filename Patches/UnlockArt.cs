@@ -52,20 +52,23 @@ internal class UnlockArt {
         typeof(ToolCrest), typeof(bool), typeof(bool))]
     [HarmonyPostfix]
     private static void AutoEquipOnUnlock(ToolCrest crest) {
+        if (!PlayerData.instance.hasChargeSlash) return;
+        
         if (CrestArtUtil.GetArtName(crest.name) is { } artName) {
             ToolItemManager.AutoEquip(NeedleArtManager.Instance.GetNeedleArtByName(artName).ToolItem);
         }
     }
-    
+   
     [HarmonyPatch(typeof(InventoryItemToolManager), nameof(InventoryItemToolManager.UnequipTool))]
     [HarmonyPostfix]
     private static void AutoEquip(InventoryItemToolManager __instance, InventoryToolCrestSlot slot) {
         if (slot.Type != NeedleArtsPlugin.ToolType()) return;
+        var manager = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>()
+            .FirstOrDefault(m => m.gameObject.scene.IsValid());
 
-        var neutralSlot = ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID).Slots
-            .Zip(slot.Crest.GetSlots(), (info, data) => (info, data))
-            .Single(s => s.info.AttackBinding == AttackToolBinding.Neutral && s.data == slot);
-        
-        neutralSlot.data.SetEquipped(CrestArtUtil.GetCrestArt().ToolItem, isManual: true, refreshTools: true);
+        foreach (var floatingSlot in manager.extraSlots.GetSlots()) {
+            if (floatingSlot.Type != NeedleArtsPlugin.ToolType()) continue;
+            floatingSlot.SetEquipped(CrestArtUtil.GetCrestArt().ToolItem, isManual: true, refreshTools: true);
+        }
     }
 }
