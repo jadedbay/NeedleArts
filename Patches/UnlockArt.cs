@@ -54,21 +54,24 @@ internal class UnlockArt {
     private static void AutoEquipOnUnlock(ToolCrest crest) {
         if (!PlayerData.instance.hasChargeSlash) return;
         
-        if (CrestArtUtil.GetArtName(crest.name) is { } artName) {
-            ToolItemManager.AutoEquip(NeedleArtManager.Instance.GetNeedleArtByName(artName).ToolItem);
-        }
+        AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
     }
    
     [HarmonyPatch(typeof(InventoryItemToolManager), nameof(InventoryItemToolManager.UnequipTool))]
     [HarmonyPostfix]
     private static void AutoEquip(InventoryItemToolManager __instance, InventoryToolCrestSlot slot) {
         if (slot.Type != NeedleArtsPlugin.ToolType()) return;
+
+        AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
+    }
+
+    private static void AutoEquipArt(ToolItem needleArt) {
         var manager = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>()
             .FirstOrDefault(m => m.gameObject.scene.IsValid());
 
         foreach (var floatingSlot in manager.extraSlots.GetSlots()) {
             if (floatingSlot.Type != NeedleArtsPlugin.ToolType()) continue;
-            floatingSlot.SetEquipped(CrestArtUtil.GetCrestArt().ToolItem, isManual: true, refreshTools: true);
+            floatingSlot.SetEquipped(needleArt, isManual: true, refreshTools: true);
         }
     }
 }
