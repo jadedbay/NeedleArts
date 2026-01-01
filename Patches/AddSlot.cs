@@ -7,9 +7,9 @@ namespace NeedleArts.Patches;
 
 [HarmonyPatch]
 public class AddSlot {
-    private const float slotPosX = -10f;
-    private const float slotPosY = -3.62f;
-    private const float bracketOffset = 1.26f;
+    private const float slotPosX = 1.2f;
+    private const float slotPosY = -3.45f;
+    private const float bracketOffset = 0.87f;
 
     private static Transform _bracket1;
     private static Transform _bracket2;
@@ -92,6 +92,7 @@ public class AddSlot {
             PlayerData.instance.ExtraToolEquips.SetData("NeedleArtsSlot", new ToolCrestsData.SlotData());
         }
 
+        PlayerData.instance.UnlockedExtraYellowSlot = true;
     }
     
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Evaluate))]
@@ -110,11 +111,14 @@ public class AddSlot {
     [HarmonyPostfix]
     private static void SetNeedleArtSlotPosition(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems) {
         if (__instance.gameObject.name != "Floating Slots") return;
+        var data = PlayerData.instance;
+        var yOffset = data.UnlockedExtraYellowSlot && !data.UnlockedExtraBlueSlot ? 1.73f : 0.0f;
+        
         foreach (var slot in childItems.Where(slot => slot.name == "NeedleArt Slot")) {
-            slot.transform.SetPosition2D(slotPosX, slotPosY);
+            slot.transform.SetLocalPosition2D(slotPosX, slotPosY + yOffset);
         }
-        _bracket1.SetPosition2D(slotPosX - bracketOffset, slotPosY);
-        _bracket2.SetPosition2D(slotPosX + bracketOffset, slotPosY);
+        _bracket1.SetLocalPosition2D(slotPosX - bracketOffset, slotPosY + yOffset);
+        _bracket2.SetLocalPosition2D(slotPosX + bracketOffset, slotPosY + yOffset);
     }
 }
 
