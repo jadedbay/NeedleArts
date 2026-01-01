@@ -24,7 +24,7 @@ internal class PatchChargedSlash {
    [HarmonyPostfix]
    private static void PatchChargeSlashRecoils(ref bool __result) {
       if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
-         __result = activeNeedleArt.GetConfig().ChargeSlashRecoils;
+         __result = activeNeedleArt.GetConfig().chargeSlashRecoils;
       } 
    }
    
@@ -32,7 +32,7 @@ internal class PatchChargedSlash {
    [HarmonyPostfix]
    private static void PatchChargeSlashChain(ref int __result) {
       if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
-         __result = activeNeedleArt.GetConfig().ChargeSlashChain;
+         __result = activeNeedleArt.GetConfig().chargeSlashChain;
       } 
    } 
    
@@ -40,7 +40,7 @@ internal class PatchChargedSlash {
    [HarmonyPostfix]
    private static void PatchChargeSlashLungeSpeed(ref float __result) {
       if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
-         __result = activeNeedleArt.GetConfig().ChargeSlashLungeSpeed;
+         __result = activeNeedleArt.GetConfig().chargeSlashLungeSpeed;
       } 
    }
    
@@ -48,7 +48,7 @@ internal class PatchChargedSlash {
    [HarmonyPostfix]
    private static void PatchChargeSlashLungeDeceleration(ref float __result) {
       if (NeedleArtManager.Instance.GetActiveNeedleArt() is { } activeNeedleArt) {
-         __result = activeNeedleArt.GetConfig().ChargeSlashLungeDeceleration;
+         __result = activeNeedleArt.GetConfig().chargeSlashLungeDeceleration;
       } 
    }
    
