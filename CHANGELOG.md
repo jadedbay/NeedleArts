@@ -1,8 +1,9 @@
 # Changelog
 
 ## v0.2.1
-- Fixed old autoequip logic being used
+- Fixed animations not working with Hunter crest when a new crest is added from Needleforge
 - Fixed unlocking yellow Vesticrest slot automatically
+- Removed old autoequip logic
 
 ## v0.2.0
 - Moved NeedleArt slot to a Vesticrest slot (you don't need the Vesticrest to see the slot)
