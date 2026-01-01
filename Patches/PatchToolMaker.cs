@@ -21,7 +21,7 @@ internal class PatchToolMaker {
     [HarmonyPatch(typeof(ToolItem), nameof(ToolItem.IsCounted), MethodType.Getter)]
     [HarmonyPostfix]
     private static void RemovePercentage(ToolItem __instance, ref bool __result) {
-        if (__instance.Type == NeedleArtsPlugin.NeedleArtsToolType.Type) {
+        if (__instance.Type == NeedleArtsPlugin.ToolType()) {
             __result = false;
         }
     }
