@@ -31,7 +31,7 @@ public class AddSlot {
             __instance.transform.Find("Cursed Socket Top").gameObject,
             __instance.transform
         );
-        cursedArtSlot.transform.SetPosition2D(slotPosX, slotPosY);
+        cursedArtSlot.transform.SetLocalPosition2D(slotPosX, slotPosY);
         
         var bracket = __instance.transform.Find("Brackets/1 Slot Brackets/Bottom Bracket");
         _bracket1 = Object.Instantiate(bracket, bracket.parent.parent);
