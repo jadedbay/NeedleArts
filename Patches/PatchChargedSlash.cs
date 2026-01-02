@@ -97,5 +97,9 @@ internal class PatchChargedSlash {
             Method = manager => manager.ResetActiveNeedleArt(),
          }
       );
+
+      // Fix for Needleforge also using anim named "Slash_Charged_Loop"
+      __instance.GetState("Loop Spin").GetFirstActionOfType<Tk2dPlayAnimationWithEvents>()
+         .clipName = "Witch_Loop";
    }
 }

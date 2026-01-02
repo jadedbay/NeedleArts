@@ -32,10 +32,10 @@ internal class CopyAnims {
          if (beastClip != null) {
             artClips.Add(Util.CopyClip(beastClip, "NeedleArt Dash"));
          }
-         
+        
          var witchLoopClip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "Slash_Charged_Loop");
          if (witchLoopClip != null) {
-            artClips.Add(Util.CopyClip(witchLoopClip, "Slash_Charged_Loop"));
+            artClips.Add(Util.CopyClip(witchLoopClip, "Witch_Loop"));
          }
       }
 
@@ -52,6 +52,9 @@ internal class CopyAnims {
             ..artClips,
          ];
       }
+
+      animator.Library.isValid = false;
+      animator.Library.ValidateLookup();
       
       _hasAddedAnims = true;
    }

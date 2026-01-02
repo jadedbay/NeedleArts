@@ -29,7 +29,7 @@ public static class Util {
             frames = clip.frames,
             fps = clip.fps,
             loopStart = clip.loopStart,
-            wrapMode = clip.wrapMode
+            wrapMode = clip.wrapMode,
         };
     }
 }

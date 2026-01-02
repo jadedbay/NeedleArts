@@ -1,15 +1,13 @@
-using System.Collections;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using NeedleArts.ArtTools;
+using NeedleArts.Crests;
 using NeedleArts.Managers;
-using NeedleArts.Utils;
 using Needleforge;
 using Needleforge.Data;
-using TeamCherry.Localization;
 using UnityEngine;
 
 namespace NeedleArts;
@@ -48,6 +46,7 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
         InitializeConfig();
         
         InitializeNeedleArtTools();
+        DuelistCrest.InitializeCrest();
     }
 
     private void OnDestroy() {
