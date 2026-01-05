@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NeedleArts.ArtTools;
 using NeedleArts.Utils;
 using Needleforge;
+using Silksong.UnityHelper.Util;
 using TeamCherry.Localization;
 using UnityEngine;
 
@@ -17,11 +19,8 @@ public class NeedleArtManager {
     public void AddNeedleArt(NeedleArt needleArt) {
         NeedleArts.Add(needleArt); 
         
-        var texture = Util.LoadTextureFromAssembly($"NeedleArts.Resources.{needleArt.Name}Icon.png");
-        var sprite = Sprite.Create(
-            texture, 
-            new Rect(0, 0, texture.width, texture.height), 
-            new Vector2(0.5f, 0.5f), 
+        var sprite = SpriteUtil.LoadEmbeddedSprite(Assembly.GetExecutingAssembly(), 
+            $"NeedleArts.Resources.Sprites.ToolIcons.{needleArt.Name}Icon.png",
             260f
         );
         

@@ -2,12 +2,14 @@ using System.Linq;
 using Needleforge;
 using Needleforge.Attacks;
 using Needleforge.Data;
+using Silksong.UnityHelper;
+using Silksong.UnityHelper.Util;
 using TeamCherry.Localization;
 using UnityEngine;
 
 namespace NeedleArts.Crests;
 
-public class DuelistCrest {
+public static class DuelistCrest {
     public static void InitializeCrest() {
         var crest = NeedleforgePlugin.AddCrest($"DuelistCrest_{NeedleArtsPlugin.Id}",
             new LocalisedString { Key = "DuelistCrest_Name", Sheet = $"Mods.{NeedleforgePlugin.Id}"},
@@ -32,29 +34,48 @@ public class DuelistCrest {
         );
 
         crest.Moveset.Slash = new Attack {
-            Name = "Slash",
-            Hitbox = [new(0, 0), new(0, -1), new(-3, -1), new(-3, 0)],
+            Name = "DuelistSlash",
+            Hitbox = [new(0, -0.4f), new(0, -0.6f), new(-5, -0.6f), new(-5, -0.4f)],
             AnimName = "SlashEffect",
             Color = Color.white,
         };
         
         crest.Moveset.AltSlash = new Attack {
-            Name = "SlashAlt",
-            Hitbox = [new(0, 0), new(0, -1), new(-3, -1), new(-3, 0)],
-            AnimName = "SlashEffectAlt",
+            Name = "DuelistSlashAlt",
+            Hitbox = [new(0, -0.4f), new(0, -0.6f), new(-5, -0.6f), new(-5, -0.4f)],
+            AnimName = "SlashEffect",
             Color = Color.white,
         };
 
         crest.Moveset.OnInitialized += () => {
+            if (GameObject.Find("DuelistAnimLib") is { } libObj)
+                return;
+
             var hc = HeroController.instance;
+            libObj = new GameObject("DuelistAnimLib");
+            Object.DontDestroyOnLoad(libObj);
             
-            heroConfig.heroAnimOverrideLib = hc.configs.First(c => c.Config.name == "Toolmaster")
-                .Config.heroAnimOverrideLib;
+            var animLibrary = libObj.AddComponent<tk2dSpriteAnimation>();
+
+            
+            /**
+            Sprite[] slashClip = [];
+            SpriteUtil.LoadEmbeddedSprite("")
+            **/
+            
+            var hunterDownSlash = hc.animCtrl.animator.Library.GetClipByName("DownSlashEffect");
+            hunterDownSlash.name = "SlashEffect";
+            
+            animLibrary.clips = [
+                hunterDownSlash
+            ];
+
+            heroConfig.heroAnimOverrideLib = animLibrary; 
 
             crest.Moveset.Slash.AnimLibrary = heroConfig.heroAnimOverrideLib;
             crest.Moveset.AltSlash.AnimLibrary = heroConfig.heroAnimOverrideLib;
 
-            foreach (var clip in heroConfig.heroAnimOverrideLib.clips) {
+            foreach (var clip in hc.animCtrl.animator.Library.clips) {
                 NeedleArtsPlugin.Log.LogInfo(clip.name);
             }
         };

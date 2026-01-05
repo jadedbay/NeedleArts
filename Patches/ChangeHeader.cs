@@ -1,6 +1,6 @@
+using System.Reflection;
 using HarmonyLib;
-using NeedleArts.Utils;
-using UnityEngine;
+using Silksong.UnityHelper.Util;
 
 namespace NeedleArts.Patches;
 
@@ -11,11 +11,8 @@ internal class ChangeHeader {
     private static void ChangeHeaderSprite(InventoryItemToolManager __instance) {
         var header = __instance.listSectionHeaders[(int)NeedleArtsPlugin.ToolType()];
         
-        var texture = Util.LoadTextureFromAssembly("NeedleArts.Resources.NeedleArtUIHeading.png");
-        var sprite = Sprite.Create(
-            texture, 
-            new Rect(0, 0, texture.width, texture.height), 
-            new Vector2(0.5f, 0.5f), 
+        var sprite = SpriteUtil.LoadEmbeddedSprite(Assembly.GetExecutingAssembly(),
+            "NeedleArts.Resources.Sprites.NeedleArtUIHeading.png", 
             64f
         );
 
