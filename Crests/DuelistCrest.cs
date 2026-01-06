@@ -1,8 +1,9 @@
 using System.Linq;
+using System.Reflection;
+using NeedleArts.Utils;
 using Needleforge;
 using Needleforge.Attacks;
 using Needleforge.Data;
-using Silksong.UnityHelper;
 using Silksong.UnityHelper.Util;
 using TeamCherry.Localization;
 using UnityEngine;
@@ -35,14 +36,14 @@ public static class DuelistCrest {
 
         crest.Moveset.Slash = new Attack {
             Name = "DuelistSlash",
-            Hitbox = [new(0, -0.4f), new(0, -0.6f), new(-5, -0.6f), new(-5, -0.4f)],
+            Hitbox = [new(0, 0.4f), new(0, -0.6f), new(-4.2f, -0.1f), new(-4.2f, -0.1f)],
             AnimName = "SlashEffect",
             Color = Color.white,
         };
         
         crest.Moveset.AltSlash = new Attack {
             Name = "DuelistSlashAlt",
-            Hitbox = [new(0, -0.4f), new(0, -0.6f), new(-5, -0.6f), new(-5, -0.4f)],
+            Hitbox = [new(0, 0.4f), new(0, -0.6f), new(-4.2f, -0.1f), new(-4.2f, -0.1f)],
             AnimName = "SlashEffect",
             Color = Color.white,
         };
@@ -58,26 +59,51 @@ public static class DuelistCrest {
             var animLibrary = libObj.AddComponent<tk2dSpriteAnimation>();
 
             
-            /**
-            Sprite[] slashClip = [];
-            SpriteUtil.LoadEmbeddedSprite("")
-            **/
+            var asm = Assembly.GetExecutingAssembly();
+            var slashEffectSprites = asm.GetManifestResourceNames()
+                .Where(name => name.StartsWith("NeedleArts.Resources.Sprites.DuelistCrest."))
+                .OrderBy(name => name)
+                .Select(name => SpriteUtil.LoadEmbeddedSprite(asm, name, pivot: new Vector2(0.8f, 0.4f)))
+                .ToArray();
             
-            var hunterDownSlash = hc.animCtrl.animator.Library.GetClipByName("DownSlashEffect");
-            hunterDownSlash.name = "SlashEffect";
+            var slashEffectAnim = Tk2dUtil.CreateTk2dAnimationClip("SlashEffect", fps: 20, slashEffectSprites);
+            slashEffectAnim.frames[0].triggerEvent = true;
+            slashEffectAnim.frames[^1].triggerEvent = true;
+            
+            var architectAnimLib = hc.configs.First(c => c.Config.name == "Toolmaster").Config.heroAnimOverrideLib;
             
             animLibrary.clips = [
-                hunterDownSlash
+                slashEffectAnim,
+               
+                architectAnimLib.GetClipByName("Slash"),
+                architectAnimLib.GetClipByName("SlashAlt"),
             ];
-
+            animLibrary.isValid = false;
+            animLibrary.ValidateLookup();
+            
+            crest.Moveset.Slash.AnimLibrary = animLibrary;
+            crest.Moveset.AltSlash.AnimLibrary = animLibrary;
+            
             heroConfig.heroAnimOverrideLib = animLibrary; 
-
-            crest.Moveset.Slash.AnimLibrary = heroConfig.heroAnimOverrideLib;
-            crest.Moveset.AltSlash.AnimLibrary = heroConfig.heroAnimOverrideLib;
-
-            foreach (var clip in hc.animCtrl.animator.Library.clips) {
-                NeedleArtsPlugin.Log.LogInfo(clip.name);
-            }
         };
+    }
+    
+    private static tk2dSpriteAnimationFrame[] CloneFrames(tk2dSpriteAnimationFrame[] frames, int? count = null)
+    {
+        count ??= frames.Length;
+        return
+        [
+            ..
+            frames
+                .Select(f =>
+                    new tk2dSpriteAnimationFrame()
+                    {
+                        spriteCollection = f.spriteCollection,
+                        spriteId = f.spriteId,
+                        triggerEvent = false
+                    }
+                )
+                .Take((int)count)
+        ];
     }
 }

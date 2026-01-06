@@ -22,6 +22,7 @@ internal class CopyAnims {
       
       foreach (var config in __instance.configs) {
          if (config.Config.heroAnimOverrideLib == null) continue;
+         if (config.Config.name == $"DuelistCrest_{NeedleArtsPlugin.Id}") continue;
          
          var clip = config.Config.heroAnimOverrideLib.clips.FirstOrDefault(c => c.name == "Slash_Charged");
          if (clip == null) continue;
@@ -46,6 +47,7 @@ internal class CopyAnims {
       
       foreach (var config in __instance.configs) {
          if (config.Config.heroAnimOverrideLib == null) continue;
+         if (config.Config.name == $"DuelistCrest_{NeedleArtsPlugin.Id}") continue;
 
          config.Config.heroAnimOverrideLib.clips = [
             ..config.Config.heroAnimOverrideLib.clips,
