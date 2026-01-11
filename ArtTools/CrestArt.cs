@@ -31,7 +31,7 @@ public class CrestArt(string name, string eventName, string anticName, string an
             .clipName = fsm.GetStringVariable("ClipName");
     }
 
-    public void AddSimpleUnlockTest() {
+    public void AddUnlockTest() {
         PlayerDataTest.TestGroup[] testGroups = [
             ..ToolItem.alternateUnlockedTest.TestGroups,
             new() {

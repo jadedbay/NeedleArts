@@ -31,8 +31,6 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     );
    
     // -----Config-----
-    public static ConfigEntry<bool> SimpleUnlock;
-    
     public static ConfigEntry<bool> UnlockNeedleArts;
     // ----------------
     
@@ -71,27 +69,6 @@ public partial class NeedleArtsPlugin : BaseUnityPlugin {
     }
     
     private void InitializeConfig() {
-        SimpleUnlock = Config.Bind(
-            "Gameplay",
-            "Simple CrestArt Unlock",
-            false,
-            "True = Unlock when crest unlocked, False = Unlock when all slots of crest unlocked."
-        );
-
-        SimpleUnlock.SettingChanged += (_, _) => {
-            if (PlayerData.instance == null) return;
-            
-            if (SimpleUnlock.Value) {
-                foreach (var crestArt in NeedleArtManager.GetAllNeedleArts().OfType<CrestArt>()) {
-                    crestArt.AddSimpleUnlockTest();
-                }
-            } else {
-                foreach (var crestArt in NeedleArtManager.GetAllNeedleArts().OfType<CrestArt>()) {
-                    crestArt.RemoveSimpleUnlockTest();
-                }
-            }
-        };
-        
         UnlockNeedleArts = Config.Bind(
             "Cheats/Testing",
             "Unlock Needle Arts",

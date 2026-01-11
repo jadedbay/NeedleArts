@@ -13,9 +13,7 @@ internal class PatchToolMaker {
         var needleArt = NeedleArtManager.Instance.GetNeedleArtByName(toolItem.name);
         needleArt.ToolItem = toolItem;
 
-        if (NeedleArtsPlugin.SimpleUnlock.Value) {
-            (needleArt as CrestArt)?.AddSimpleUnlockTest();
-        }
+        (needleArt as CrestArt)?.AddUnlockTest();
     }
 
     [HarmonyPatch(typeof(ToolItem), nameof(ToolItem.IsCounted), MethodType.Getter)]
