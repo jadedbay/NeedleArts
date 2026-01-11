@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Reflection;
-using NeedleArts.Utils;
+using HarmonyLib;
 using Needleforge;
 using Needleforge.Attacks;
 using Needleforge.Data;
@@ -13,8 +13,8 @@ namespace NeedleArts.Crests;
 public static class DuelistCrest {
     public static void InitializeCrest() {
         var crest = NeedleforgePlugin.AddCrest($"DuelistCrest_{NeedleArtsPlugin.Id}",
-            new LocalisedString { Key = "DuelistCrest_Name", Sheet = $"Mods.{NeedleforgePlugin.Id}"},
-            new LocalisedString { Key = "DuelistCrest_Desc", Sheet = $"Mods.{NeedleforgePlugin.Id}"}
+            new LocalisedString { Key = "DuelistCrest_Name", Sheet = $"Mods.{NeedleArtsPlugin.Id}"},
+            new LocalisedString { Key = "DuelistCrest_Desc", Sheet = $"Mods.{NeedleArtsPlugin.Id}"}
         );
 
         crest.HudFrame.Preset = VanillaCrest.REAPER;
@@ -57,7 +57,6 @@ public static class DuelistCrest {
             Object.DontDestroyOnLoad(libObj);
             
             var animLibrary = libObj.AddComponent<tk2dSpriteAnimation>();
-
             
             var asm = Assembly.GetExecutingAssembly();
             var slashEffectSprites = asm.GetManifestResourceNames()
@@ -86,24 +85,5 @@ public static class DuelistCrest {
             
             heroConfig.heroAnimOverrideLib = animLibrary; 
         };
-    }
-    
-    private static tk2dSpriteAnimationFrame[] CloneFrames(tk2dSpriteAnimationFrame[] frames, int? count = null)
-    {
-        count ??= frames.Length;
-        return
-        [
-            ..
-            frames
-                .Select(f =>
-                    new tk2dSpriteAnimationFrame()
-                    {
-                        spriteCollection = f.spriteCollection,
-                        spriteId = f.spriteId,
-                        triggerEvent = false
-                    }
-                )
-                .Take((int)count)
-        ];
     }
 }

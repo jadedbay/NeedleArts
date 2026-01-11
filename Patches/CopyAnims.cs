@@ -45,6 +45,8 @@ internal class CopyAnims {
          ..artClips,
       ];
       
+      
+      /**
       foreach (var config in __instance.configs) {
          if (config.Config.heroAnimOverrideLib == null) continue;
          if (config.Config.name == $"DuelistCrest_{NeedleArtsPlugin.Id}") continue;
@@ -54,6 +56,7 @@ internal class CopyAnims {
             ..artClips,
          ];
       }
+      **/
 
       animator.Library.isValid = false;
       animator.Library.ValidateLookup();
