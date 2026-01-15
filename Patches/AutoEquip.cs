@@ -15,9 +15,7 @@ public class AutoEquip {
         
         __instance.GetState("Save").InsertAction(4, new DelegateAction<object> {
             Arg = new object(),
-            Method = _ => {
-                NeedleArtManager.AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem);
-            }
+            Method = _ => NeedleArtManager.AutoEquipArt(CrestArtUtil.GetCrestArt().ToolItem)
         });
     }
 }

@@ -4,7 +4,6 @@ using NeedleArts.ArtTools;
 using NeedleArts.Utils;
 using Needleforge;
 using TeamCherry.Localization;
-using Unity.Baselib.LowLevel;
 using UnityEngine;
 
 namespace NeedleArts.Managers;
@@ -15,6 +14,8 @@ public class NeedleArtManager {
 
     private NeedleArt? _activeNeedleArt;
 
+    private bool autoEquip;
+    
     public void AddNeedleArt(NeedleArt needleArt) {
         NeedleArts.Add(needleArt); 
         
@@ -80,14 +81,8 @@ public class NeedleArtManager {
         _activeNeedleArt = null;
     }
     
-    public static void AutoEquipArt(ToolItem needleArt) {
-        var manager = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>()
-            .FirstOrDefault(m => m.gameObject.scene.IsValid());
-
-        foreach (var floatingSlot in manager.extraSlots.GetSlots()) {
-            if (floatingSlot.Type != NeedleArtsPlugin.ToolType() 
-                || floatingSlot.slotInfo.AttackBinding != AttackToolBinding.Neutral) continue;
-            floatingSlot.SetEquipped(needleArt, isManual: true, refreshTools: true);
-        }
+    public static void AutoEquipArt(ToolItem toolItem) {
+        ToolItemManager.SetExtraEquippedTool("NeedleArtsSlot_Neutral", toolItem);
     }
 }
+
