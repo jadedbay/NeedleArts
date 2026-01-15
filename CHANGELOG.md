@@ -1,7 +1,7 @@
 # Changelog
 
 ## v0.3.0
-- Added directional NeedleArt slots to Vesticrest
+- Added directional NeedleArt slots to Vesticrest (can equip up to 3 needle arts)
 - Removed previous unlocking logic (now uses the SimpleUnlock logic)
 
 > <strong>Dev Comments:</strong>
