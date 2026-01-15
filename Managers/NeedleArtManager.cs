@@ -85,7 +85,8 @@ public class NeedleArtManager {
             .FirstOrDefault(m => m.gameObject.scene.IsValid());
 
         foreach (var floatingSlot in manager.extraSlots.GetSlots()) {
-            if (floatingSlot.Type != NeedleArtsPlugin.ToolType()) continue;
+            if (floatingSlot.Type != NeedleArtsPlugin.ToolType() 
+                || floatingSlot.slotInfo.AttackBinding != AttackToolBinding.Neutral) continue;
             floatingSlot.SetEquipped(needleArt, isManual: true, refreshTools: true);
         }
     }

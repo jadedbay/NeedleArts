@@ -1,3 +1,4 @@
+using System.Linq;
 using HarmonyLib;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
@@ -9,6 +10,12 @@ using UnityEngine;
 namespace NeedleArts.Patches;
 [HarmonyPatch]
 internal class PatchChargedSlash {
+   [HarmonyPatch(typeof(HeroController), nameof(HeroController.CanNailCharge))]
+   [HarmonyPrefix]
+   private static bool IsNeedleArtEquipped() {
+      return NeedleArtManager.Instance.GetAllNeedleArts().Any(tool => tool.ToolItem.IsEquipped);
+   }
+   
    // Patch config values to return equipped needle art values
    [HarmonyPatch(typeof(GetHeroAttackObject), nameof(GetHeroAttackObject.GetGameObject))]
    [HarmonyPostfix]
