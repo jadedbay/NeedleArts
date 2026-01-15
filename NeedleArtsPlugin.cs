@@ -1,15 +1,11 @@
-using System.Collections;
-using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using NeedleArts.ArtTools;
 using NeedleArts.Managers;
-using NeedleArts.Utils;
 using Needleforge;
 using Needleforge.Data;
-using TeamCherry.Localization;
 using UnityEngine;
 
 namespace NeedleArts;
