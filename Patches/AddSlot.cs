@@ -140,7 +140,7 @@ public class AddSlot {
 
     [HarmonyPatch(typeof(InventoryItemGrid), nameof(InventoryItemGrid.PositionGridItems))]
     [HarmonyPostfix]
-    private static void SetNeedleArtSlotPosition(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems) {
+    private static void SetNeedleArtSlotPositions(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems) {
         if (__instance.gameObject.name != "Floating Slots") return;
         var data = PlayerData.instance;
         var yOffset = data.UnlockedExtraYellowSlot && !data.UnlockedExtraBlueSlot ? 1.73f : 0.0f;
@@ -149,6 +149,30 @@ public class AddSlot {
         foreach (var slot in childItems.Where(slot => slot.name == "NeedleArt Slot")) {
             slot.transform.SetLocalPosition2D(SlotPosX + SlotXGap * index, SlotPosY + yOffset);
             index++;
+        }
+    }
+    
+    [HarmonyPatch(typeof(InventoryItemGrid), "LinkGridSelectables")]
+    [HarmonyPostfix]
+    private static void FixNeedleArtNavigation(
+        InventoryItemGrid __instance, 
+        List<InventoryItemSelectableDirectional> childItems,
+        List<InventoryItemSelectableDirectional> downOverrides,
+        List<InventoryItemSelectableDirectional> upOverrides) 
+    {
+        if (__instance.gameObject.name != "Floating Slots") return;
+    
+        var needleArtSlots = childItems.Where(slot => slot.name == "NeedleArt Slot").ToList();
+        if (needleArtSlots.Count == 0) return;
+
+        var upSelectable = needleArtSlots[0].Selectables[0];
+        var downSelectable = needleArtSlots[^1].FallbackSelectables[1];
+        NeedleArtsPlugin.Log.LogInfo(needleArtSlots[^1].FallbackSelectables[1]);
+        
+        foreach (var slot in needleArtSlots) {
+            slot.Selectables[0] = upSelectable;
+            slot.Selectables[1] = null;
+            slot.FallbackSelectables[1] = downSelectable;
         }
     }
 }
