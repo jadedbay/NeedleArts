@@ -72,9 +72,7 @@ public class AddSlot {
             .ToList();
         attackSlots.Add(__instance.transform.Find("Defend Slot").gameObject);
 
-        foreach (var slot in slots) {
-            slot.Evaluate(attackSlots);
-        }
+        foreach (var slot in slots) slot.Evaluate(attackSlots);
     }
 
     [HarmonyPatch(typeof(InventoryItemGrid), nameof(InventoryItemGrid.PositionGridItems))]
