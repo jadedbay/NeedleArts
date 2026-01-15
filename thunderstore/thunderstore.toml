@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 # The name of the team you are publishing as
 namespace = "jadedbay"
 # max 250 characters
-description = "Adds the ability to equip Needle Strikes from other crests."
+description = "Adds the ability to equip multiple Needle Strikes from any crest."
 
 # Replace this with a correct repo URL if the default is not accurate
 websiteUrl = "https://github.com/jadedbay/NeedleArts"

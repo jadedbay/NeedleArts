@@ -65,7 +65,7 @@ public class AddSlot {
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Evaluate))]
     [HarmonyPostfix]
     private static void SetSlotValues(InventoryFloatingToolSlots __instance) {
-        if (slots.IsNullOrEmpty()) return;
+        if (slots.IsNullOrEmpty() || slots[0].gameObject == null) return;
 
         var attackSlots = Resources.FindObjectsOfTypeAll<GameObject>()
             .Where(go => go.name == "Attack Slot(Clone)" && go.transform.parent.name == "Hunter")
