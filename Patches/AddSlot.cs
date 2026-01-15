@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using GlobalSettings;
 using HarmonyLib;
-using NeedleArts.Managers;
-using NeedleArts.Utils;
 using UnityEngine;
 
 namespace NeedleArts.Patches;
@@ -152,13 +149,9 @@ public class AddSlot {
         }
     }
     
-    [HarmonyPatch(typeof(InventoryItemGrid), "LinkGridSelectables")]
+    [HarmonyPatch(typeof(InventoryItemGrid), nameof(InventoryItemGrid.LinkGridSelectables))]
     [HarmonyPostfix]
-    private static void FixNeedleArtNavigation(
-        InventoryItemGrid __instance, 
-        List<InventoryItemSelectableDirectional> childItems,
-        List<InventoryItemSelectableDirectional> downOverrides,
-        List<InventoryItemSelectableDirectional> upOverrides) 
+    private static void FixNav(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems)
     {
         if (__instance.gameObject.name != "Floating Slots") return;
     
@@ -166,14 +159,30 @@ public class AddSlot {
         if (needleArtSlots.Count == 0) return;
 
         var upSelectable = needleArtSlots[0].Selectables[0];
-        var downSelectable = needleArtSlots[^1].FallbackSelectables[1];
-        NeedleArtsPlugin.Log.LogInfo(needleArtSlots[^1].FallbackSelectables[1]);
-        
-        foreach (var slot in needleArtSlots) {
+
+        for (var i = 0; i < needleArtSlots.Count; i++) {
+            var slot = needleArtSlots[i];
+            
             slot.Selectables[0] = upSelectable;
             slot.Selectables[1] = null;
-            slot.FallbackSelectables[1] = downSelectable;
+
+            slot.Selectables[2] = i > 0 ? needleArtSlots[i - 1] : null;
+            slot.Selectables[3] = i < needleArtSlots.Count - 1 ? needleArtSlots[i + 1] : null;
         }
+    }
+
+    [HarmonyPatch(typeof(InventoryItemSelectableDirectional), nameof(InventoryItemSelectableDirectional.GetNextSelectable), 
+        typeof(InventoryItemManager.SelectionDirection), typeof(bool))]
+    [HarmonyPrefix]
+    private static void UseParentNav(
+        InventoryItemSelectableDirectional __instance, 
+        InventoryItemManager.SelectionDirection direction, 
+        ref bool allowAutoNavOnFirst
+    ) {
+        if (__instance.name != "NeedleArt Slot") return;
+        if (__instance.Selectables[(int)direction] != null) return;
+        
+        allowAutoNavOnFirst = false;
     }
 }
 
