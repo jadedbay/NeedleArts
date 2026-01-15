@@ -1,55 +1,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using NeedleArts.Managers;
-using NeedleArts.Utils;
 using UnityEngine;
 
 namespace NeedleArts.Patches;
 
 [HarmonyPatch]
 public class AddSlot {
-    private const float slotPosX = 1.2f;
-    private const float slotPosY = -3.45f;
-    private const float bracketOffset = 0.87f;
+    private const float SlotPosX = -0.5f;
+    private const float SlotPosY = -3.85f;
+    private const float SlotXGap = 1.0f;
 
-    private static Transform _bracket1;
-    private static Transform _bracket2;
+    private static List<NeedleArtSlot> slots;
     
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Awake))]
     [HarmonyPostfix]
     private static void SpawnSlot(InventoryFloatingToolSlots __instance) {
-        var artSlot = Object.Instantiate(
-            __instance.transform.Find("Defend Slot").gameObject,
-            __instance.transform
-        );
-        artSlot.name = "NeedleArt Slot";
-        artSlot.SetActive(false);
+        slots = [
+            new NeedleArtSlot(__instance, AttackToolBinding.Up),
+            new NeedleArtSlot(__instance, AttackToolBinding.Neutral),
+            new NeedleArtSlot(__instance, AttackToolBinding.Down)
+        ];
         
-        artSlot.GetComponent<InventoryToolCrestSlot>().slotInfo.Type = 
-            NeedleArtsPlugin.ToolType();
-        
-        var cursedArtSlot = Object.Instantiate(
-            __instance.transform.Find("Cursed Socket Top").gameObject,
-            __instance.transform
-        );
-        cursedArtSlot.transform.SetLocalPosition2D(slotPosX, slotPosY);
-        
-        var bracket = __instance.transform.Find("Brackets/1 Slot Brackets/Bottom Bracket");
-        _bracket1 = Object.Instantiate(bracket, bracket.parent.parent);
-        _bracket1.SetRotation2D(270f);
-        _bracket1.gameObject.SetActive(false);
-        _bracket2 = Object.Instantiate(bracket, bracket.parent.parent);
-        _bracket2.SetRotation2D(90f);
-        _bracket2.gameObject.SetActive(false);
-
-        var configSlot = new InventoryFloatingToolSlots.Slot {
-            SlotObject = artSlot.GetComponent<InventoryToolCrestSlot>(),
-            Type = NeedleArtsPlugin.ToolType(),
-            Id = "NeedleArtsSlot",
-            CursedSlot = cursedArtSlot,
-        };
-
         var test = new PlayerDataTest.Test {
             FieldName = "hasChargeSlash",
             Type = PlayerDataTest.TestType.Bool,
@@ -67,16 +39,16 @@ public class AddSlot {
              };
             
             needleArtConfigs.Add(new InventoryFloatingToolSlots.Config {
-                Slots = [..config.Slots, configSlot],
-                Brackets = [..config.Brackets, _bracket1.gameObject, _bracket2.gameObject],
+                Slots = [..config.Slots, ..slots.Select(s => s.slot)],
+                Brackets = [..config.Brackets],
                 PositionOffset = config.PositionOffset,
                 Condition = condition,
             });
         }
 
         var baseConfig = new InventoryFloatingToolSlots.Config {
-            Slots = [configSlot],
-            Brackets = [_bracket1.gameObject, _bracket2.gameObject],
+            Slots = [..slots.Select(s => s.slot)],
+            Brackets = [],
             PositionOffset = new Vector2(0.0f, 0.0f),
             Condition = new PlayerDataTest {
                 TestGroups = [
@@ -88,37 +60,105 @@ public class AddSlot {
         };
 
         __instance.configs = [baseConfig, ..__instance.configs, ..needleArtConfigs];
-        
-        var data = PlayerData.instance.ExtraToolEquips.GetData("NeedleArtsSlot");
-        if (string.IsNullOrEmpty(data.EquippedTool)) {
-            PlayerData.instance.ExtraToolEquips.SetData("NeedleArtsSlot", new ToolCrestsData.SlotData());
-        }
     }
     
     [HarmonyPatch(typeof(InventoryFloatingToolSlots), nameof(InventoryFloatingToolSlots.Evaluate))]
     [HarmonyPostfix]
-    private static void SetAnimator(InventoryFloatingToolSlots __instance) {
-        if (__instance.transform.Find("NeedleArt Slot") is not { } artSlot) return;
-        if (__instance.transform.Find("Defend Slot") is not { } defendSlot) return;
-        
-        artSlot.Find("Background Group/Background")
-                .GetComponent<Animator>().runtimeAnimatorController =
-            defendSlot.Find("Background Group/Background")
-                .GetComponent<Animator>().runtimeAnimatorController;
+    private static void SetSlotValues(InventoryFloatingToolSlots __instance) {
+        if (slots.IsNullOrEmpty() || slots[0].gameObject == null) return;
+
+        var attackSlots = Resources.FindObjectsOfTypeAll<GameObject>()
+            .Where(go => go.name == "Attack Slot(Clone)" && go.transform.parent.name == "Hunter")
+            .ToList();
+        attackSlots.Add(__instance.transform.Find("Defend Slot").gameObject);
+
+        foreach (var slot in slots) slot.Evaluate(attackSlots);
     }
 
     [HarmonyPatch(typeof(InventoryItemGrid), nameof(InventoryItemGrid.PositionGridItems))]
     [HarmonyPostfix]
-    private static void SetNeedleArtSlotPosition(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems) {
+    private static void SetNeedleArtSlotPositions(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems) {
         if (__instance.gameObject.name != "Floating Slots") return;
         var data = PlayerData.instance;
         var yOffset = data.UnlockedExtraYellowSlot && !data.UnlockedExtraBlueSlot ? 1.73f : 0.0f;
-        
+
+        var index = 0;
         foreach (var slot in childItems.Where(slot => slot.name == "NeedleArt Slot")) {
-            slot.transform.SetLocalPosition2D(slotPosX, slotPosY + yOffset);
+            slot.transform.SetLocalPosition2D(SlotPosX + SlotXGap * index, SlotPosY + yOffset);
+            index++;
         }
-        _bracket1.SetLocalPosition2D(slotPosX - bracketOffset, slotPosY + yOffset);
-        _bracket2.SetLocalPosition2D(slotPosX + bracketOffset, slotPosY + yOffset);
+    }
+    
+    [HarmonyPatch(typeof(InventoryItemGrid), nameof(InventoryItemGrid.LinkGridSelectables))]
+    [HarmonyPostfix]
+    private static void FixNav(InventoryItemGrid __instance, List<InventoryItemSelectableDirectional> childItems)
+    {
+        if (__instance.gameObject.name != "Floating Slots") return;
+    
+        var needleArtSlots = childItems.Where(slot => slot.name == "NeedleArt Slot").ToList();
+        if (needleArtSlots.Count == 0) return;
+
+        var upSelectable = needleArtSlots[0].Selectables[0];
+
+        for (var i = 0; i < needleArtSlots.Count; i++) {
+            var slot = needleArtSlots[i];
+            
+            slot.Selectables[0] = upSelectable;
+            slot.Selectables[1] = null;
+
+            slot.Selectables[2] = i > 0 ? needleArtSlots[i - 1] : null;
+            slot.Selectables[3] = i < needleArtSlots.Count - 1 ? needleArtSlots[i + 1] : null;
+        }
+    }
+
+    [HarmonyPatch(typeof(InventoryItemSelectableDirectional), nameof(InventoryItemSelectableDirectional.GetNextSelectable), 
+        typeof(InventoryItemManager.SelectionDirection), typeof(bool))]
+    [HarmonyPrefix]
+    private static void UseParentNav(
+        InventoryItemSelectableDirectional __instance, 
+        InventoryItemManager.SelectionDirection direction, 
+        ref bool allowAutoNavOnFirst
+    ) {
+        if (__instance.name != "NeedleArt Slot") return;
+        if (__instance.Selectables[(int)direction] != null) return;
+        
+        allowAutoNavOnFirst = false;
     }
 }
 
+internal class NeedleArtSlot {
+    public GameObject gameObject;
+    public InventoryFloatingToolSlots.Slot slot;
+    public AttackToolBinding binding;
+    
+    public NeedleArtSlot(InventoryFloatingToolSlots inventoryFloatingToolSlots, AttackToolBinding binding) {
+        this.binding = binding;
+        
+        gameObject = Object.Instantiate(
+            inventoryFloatingToolSlots.transform.Find("Defend Slot").gameObject,
+            inventoryFloatingToolSlots.transform
+        );
+        gameObject.name = "NeedleArt Slot";
+        gameObject.SetActive(false);
+        gameObject.transform.localScale = new Vector3(0.6f, 0.6f);
+        
+        slot = new InventoryFloatingToolSlots.Slot {
+            SlotObject = gameObject.GetComponent<InventoryToolCrestSlot>(),
+            Type = NeedleArtsPlugin.ToolType(),
+            Id = $"NeedleArtsSlot_{binding.ToString()}",
+            CursedSlot = Object.Instantiate(
+                inventoryFloatingToolSlots.transform.Find("Cursed Socket Top").gameObject,
+                inventoryFloatingToolSlots.transform
+            )
+        };
+    }
+
+    public void Evaluate(List<GameObject> attackSlots) {
+        gameObject.GetComponent<InventoryToolCrestSlot>().slotInfo.AttackBinding = binding;
+        var attackSlot = attackSlots.First(s => s.GetComponent<InventoryToolCrestSlot>().slotInfo.AttackBinding == binding);
+        
+        gameObject.transform.Find("Background Group/Background").GetComponent<Animator>().runtimeAnimatorController =
+            attackSlot.transform.Find("Background Group/Background").GetComponent<Animator>()
+                .runtimeAnimatorController;
+    }
+}

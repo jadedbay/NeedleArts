@@ -1,7 +1,16 @@
 # Changelog
 
+## v0.3.0
+- Added directional NeedleArt slots to Vesticrest
+- Removed previous unlocking logic (now uses the SimpleUnlock logic)
+
+> <strong>Dev Comments:</strong>
+>
+> My original plan for this mod was to make it an addition that integrated into the normal progression of the game such as unlocking arts overtime, and eventually a custom crest focused around NeedleArts.
+> I have decided to remove the unlocking system as it forced me to do some weird auto equips, that wasn't very intuitive to use.
+> To make a fully custom crest is a decent amount of work, and I've realised I would never get it to polished state I would be happy with any time soon, so for now I will just let any crest use all 3 NeedleArt slots.
+
 ## v0.2.1
-- Fixed animations not working with Hunter crest when a new crest is added with Needleforge
 - Fixed unlocking yellow Vesticrest slot automatically
 - Fixed cursed slot icon position
 - Removed old autoequip logic

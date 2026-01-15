@@ -14,6 +14,8 @@ public class NeedleArtManager {
 
     private NeedleArt? _activeNeedleArt;
 
+    private bool autoEquip;
+    
     public void AddNeedleArt(NeedleArt needleArt) {
         NeedleArts.Add(needleArt); 
         
@@ -46,27 +48,24 @@ public class NeedleArtManager {
 
     public void SetActiveNeedleArt() {
         var inputHandler = HeroController.instance.inputHandler;
-
-        var slotInfo = ToolItemManager.GetCrestByName(PlayerData.instance.CurrentCrestID).Slots;
-        var slotData = PlayerData.instance.ToolEquips.GetData(PlayerData.instance.CurrentCrestID).Slots;
-        var vestiSlot = PlayerData.instance.ExtraToolEquips.GetData("NeedleArtsSlot");
-
-        _activeNeedleArt = GetNeedleArtByName(vestiSlot.EquippedTool);
         
-        var slots = slotInfo.Zip(slotData, (info, data) => (info, data))
-            .Where(slot => slot.info.Type == NeedleArtsPlugin.ToolType())
-            .ToList();
+        var data = PlayerData.instance;
+        List<(ToolCrestsData.SlotData data, AttackToolBinding binding)> slots = [
+            (data.ExtraToolEquips.GetData("NeedleArtsSlot_Up"), AttackToolBinding.Up),
+            (data.ExtraToolEquips.GetData("NeedleArtsSlot_Neutral"), AttackToolBinding.Neutral),
+            (data.ExtraToolEquips.GetData("NeedleArtsSlot_Down"), AttackToolBinding.Down),
+        ];
         
         // check up/down
         _activeNeedleArt = slots
             .Where(s =>
-                s.info.AttackBinding == AttackToolBinding.Up && inputHandler.inputActions.Up.IsPressed
-                || s.info.AttackBinding == AttackToolBinding.Down && inputHandler.inputActions.Down.IsPressed
+                s.binding == AttackToolBinding.Up && inputHandler.inputActions.Up.IsPressed
+                || s.binding == AttackToolBinding.Down && inputHandler.inputActions.Down.IsPressed
             ).Select(s => GetNeedleArtByName(s.data.EquippedTool))
             .FirstOrDefault(art => art is not null) 
            
         // neutral
-           ?? GetNeedleArtByName(vestiSlot.EquippedTool)
+           ?? GetNeedleArtByName(slots.Single(s => s.binding == AttackToolBinding.Neutral).data.EquippedTool)
            
         // fallback to any equipped
            ?? slots
@@ -82,13 +81,8 @@ public class NeedleArtManager {
         _activeNeedleArt = null;
     }
     
-    public static void AutoEquipArt(ToolItem needleArt) {
-        var manager = Resources.FindObjectsOfTypeAll<InventoryItemToolManager>()
-            .FirstOrDefault(m => m.gameObject.scene.IsValid());
-
-        foreach (var floatingSlot in manager.extraSlots.GetSlots()) {
-            if (floatingSlot.Type != NeedleArtsPlugin.ToolType()) continue;
-            floatingSlot.SetEquipped(needleArt, isManual: true, refreshTools: true);
-        }
+    public static void AutoEquipArt(ToolItem toolItem) {
+        ToolItemManager.SetExtraEquippedTool("NeedleArtsSlot_Neutral", toolItem);
     }
 }
+

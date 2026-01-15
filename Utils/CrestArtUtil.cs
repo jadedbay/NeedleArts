@@ -24,10 +24,6 @@ public static class CrestArtUtil {
         return CrestToArt.TryGetValue(crestName, out var art) ? art : null;
     }
 
-    public static string GetCrestName(string artName) {
-        return ArtToCrest.TryGetValue(artName, out var crest) ? crest : null;
-    }
-
     public static NeedleArt GetCrestArt() {
         return NeedleArtManager.Instance.GetNeedleArtByName(GetArtName(PlayerData.instance.CurrentCrestID));
     }

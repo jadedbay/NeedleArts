@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 # The name of the team you are publishing as
 namespace = "jadedbay"
 # max 250 characters
-description = "Adds the ability to equip Needle Strikes from other crests."
+description = "Adds the ability to equip multiple Needle Strikes from any crest."
 
 # Replace this with a correct repo URL if the default is not accurate
 websiteUrl = "https://github.com/jadedbay/NeedleArts"
@@ -15,7 +15,6 @@ containsNsfwContent = false
 # dependencies are specified in the format AuthorName-PackageName = "version". You should always have at least BepInExPack_Silksong.
 [package.dependencies]
 BepInEx-BepInExPack_Silksong = "5.4.2304"
-jakobhellermann-BepInExConfigurationManager = "18.4.1"
 silksong_modding-I18N = "1.0.2"
 silksong_modding-FsmUtil = "0.3.4"
 Voidlings-Needleforge = "0.8.0"

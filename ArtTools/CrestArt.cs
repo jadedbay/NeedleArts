@@ -7,10 +7,10 @@ namespace NeedleArts.ArtTools;
 
 public class CrestArt(string name, string eventName, string anticName, string animName, int configId, string? crestDataField)
     : NeedleArt(name, animName) {
-    public string EventName { get; } = eventName;
-    public int ConfigId { get; } = configId;
-    public string AnticName { get; } = anticName;
-    public string? CrestDataField { get; } = crestDataField;
+    private string EventName { get; } = eventName;
+    private int ConfigId { get; } = configId;
+    private string AnticName { get; } = anticName;
+    private string? CrestDataField { get; } = crestDataField;
 
     public override GameObject GetChargeSlash() {
         return HeroController.instance.configs[ConfigId].ChargeSlash;
@@ -31,7 +31,7 @@ public class CrestArt(string name, string eventName, string anticName, string an
             .clipName = fsm.GetStringVariable("ClipName");
     }
 
-    public void AddSimpleUnlockTest() {
+    public void AddUnlockTest() {
         PlayerDataTest.TestGroup[] testGroups = [
             ..ToolItem.alternateUnlockedTest.TestGroups,
             new() {
@@ -55,9 +55,5 @@ public class CrestArt(string name, string eventName, string anticName, string an
         ToolItem.alternateUnlockedTest = new PlayerDataTest {
             TestGroups = testGroups
         };
-    }
-
-    public void RemoveSimpleUnlockTest() {
-        ToolItem.alternateUnlockedTest = new PlayerDataTest();
     }
 }
