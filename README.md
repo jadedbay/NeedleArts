@@ -9,7 +9,7 @@ A Hollow Knight: Silksong mod, adds the ability to equip multiple Needle Strikes
 ## Features
 - Adds a new tool type NeedleArt(orange) and adds 3 slots to the Vesticrest.
 
-- Adds a new NeedleArt tool for each crest, equipping tool associated with crest will use that crest's Needle Strike.
+- Adds a new NeedleArt tool for each crest, equipping tool associated with crest will use that crest's Needle Strike when directional input matches.
 
 ### Config
 - UnlockNeedleArts: Instantly unlocks Needle Strike and all Needle Arts.
