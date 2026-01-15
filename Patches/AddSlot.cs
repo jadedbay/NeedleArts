@@ -118,8 +118,11 @@ public class AddSlot {
         var attackSlots = Resources.FindObjectsOfTypeAll<GameObject>()
             .Where(go => go.name == "Attack Slot(Clone)" && go.transform.parent.name == "Hunter")
             .ToList();
+        
         SetAnimator(attackSlots, upSlot, AttackToolBinding.Up);
+        upSlot.GetComponent<InventoryToolCrestSlot>().slotInfo.AttackBinding = AttackToolBinding.Up;
         SetAnimator(attackSlots, downSlot, AttackToolBinding.Down);
+        upSlot.GetComponent<InventoryToolCrestSlot>().slotInfo.AttackBinding = AttackToolBinding.Down;
         
         neutralSlot.transform.Find("Background Group/Background").GetComponent<Animator>().runtimeAnimatorController =
             __instance.transform.Find("Defend Slot/Background Group/Background").GetComponent<Animator>()
